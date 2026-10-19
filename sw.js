@@ -7,7 +7,6 @@ self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) =
 self.addEventListener("fetch", (e) => {
   const u = new URL(e.request.url);
   if (e.request.method !== "GET" || u.origin !== self.location.origin) return; // banco, VLibras e demais serviços: direto na rede
-  if (e.request.headers.has("range") || /\.(mp4|webm)$/.test(u.pathname)) return; // vídeo da abertura: o navegador pede por partes; vai direto à rede
   e.respondWith(fetch(e.request).then((r) => { const c = r.clone(); caches.open(VERSAO).then((k) => k.put(e.request, c)); return r; })
     .catch(() => caches.match(e.request).then((r) => r || caches.match("./index.html"))));
 });
