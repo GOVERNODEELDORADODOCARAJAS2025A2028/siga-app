@@ -1,0 +1,18 @@
+codigo;dobra;angulo_graus;borda_de_encosto;medida_ate_centro_da_dobra_mm;aba_externa_resultante_mm;comprimento_da_dobra_mm;chapa_mm;raio_interno_mm;fator_K;V_matriz_mm;forca_estimada_tf;sentido
+F-LON-01;1;90;A;70,5;75;2500;4,75;6;0.42;40;93,4;as duas abas para tras, lado oposto a face de concreto
+F-LON-01;2;90;B;95,5;100;2500;4,75;6;0.42;40;93,4;as duas abas para tras, lado oposto a face de concreto
+F-LON-02;1;90;A;58,5;63;974;4,75;6;0.42;40;36,4;U: as duas abas para o mesmo lado
+F-LON-02;2;90;B;58,5;63;974;4,75;6;0.42;40;36,4;U: as duas abas para o mesmo lado
+F-LON-03;1;90;A;57,1;63;974;6,30;8;0.42;50;51,2;uma dobra de 90 graus
+F-LON-05;1;90;A;69,1;75;2500;6,30;8;0.42;50;131,5;as duas abas para baixo, lado oposto a face de concreto
+F-LON-05;2;90;B;69,1;75;2500;6,30;8;0.42;50;131,5;as duas abas para baixo, lado oposto a face de concreto
+F-LON-06;1;90;A;57,1;63;607;6,30;8;0.42;50;31,9;uma dobra de 90 graus
+F-LON-07;1;90;A;58,5;63;607;4,75;6;0.42;40;22,7;U: as duas abas para o mesmo lado
+F-LON-07;2;90;B;58,5;63;607;4,75;6;0.42;40;22,7;U: as duas abas para o mesmo lado
+F-LON-08;1;90;B;57,1;63;459,5;6,30;8;0.42;50;24,2;aba superior para fora, lado oposto ao concreto
+F-PLA-01;1;90;A;58,5;63;2200;4,75;6;0.42;40;82,2;as duas abas para baixo, lado oposto a face de concreto
+F-PLA-01;2;90;B;58,5;63;2200;4,75;6;0.42;40;82,2;as duas abas para baixo, lado oposto a face de concreto
+F-PLA-02;1;90;A;58,5;63;674;4,75;6;0.42;40;25,2;U: as duas abas para o mesmo lado
+F-PLA-02;2;90;B;58,5;63;674;4,75;6;0.42;40;25,2;U: as duas abas para o mesmo lado
+F-PLA-03;1;90;B;69,1;75;2012,6;6,30;8;0.42;50;105,9;pe para fora, lado oposto ao concreto
+F-PLA-04;1;90;B;69,1;75;498;6,30;8;0.42;50;26,2;pe para fora, lado oposto ao concreto

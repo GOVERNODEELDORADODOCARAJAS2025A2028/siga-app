@@ -1,0 +1,13 @@
+codigo;peca;forma;chapa_mm;qtd;planificada_comprimento_mm;planificada_largura_mm;abas_externas_mm;furos;rasgos;peso_unit_kg;peso_total_kg;observacao
+F-LON-01;Painel lateral da longarina;Longarina;4,75;8;2500;1157,1;75 / 1000 / 100;4;0;107,8;862,6;Solda de nervuras, cantoneiras e orelhas pelo lado de tras. Face de concreto sem solda e sem respingo.
+F-LON-02;Nervura vertical do painel (U);Longarina;4,75;56;974;148,1;63 / 40 / 63;0;0;5,4;301,2;"7 por painel, eixos a cada 312,5 mm; soldar pelas pontas das abas na face de tras do painel."
+F-LON-03;Cantoneira de ligacao do painel;Longarina;6,30;16;974;126,1;63 / 75;5;0;6;96,2;"Uma em cada ponta do painel, aba soldada rente a borda; liga modulos entre si e recebe a testeira."
+F-LON-04;Orelha do tirante superior;Longarina;6,30;32;80;80;80;1;0;0,3;9,7;Soldar em pe sobre a aba superior, a 40 mm da face de concreto, nas posicoes 156,25 / 1093,75 / 1406,25 / 2343,75 mm.
+F-LON-05;Fundo da longarina (U invertido);Longarina;6,30;4;2500;766,2;75 / 640 / 75;0;8;94,2;377;Rasgos permitem larguras de viga de 250 a 360 mm.
+F-LON-06;Cantoneira de ligacao do fundo;Longarina;6,30;8;607;126,1;63 / 75;3;0;3,7;30;Uma em cada ponta do fundo, soldada por baixo da alma.
+F-LON-07;Nervura transversal do fundo (U);Longarina;4,75;16;607;148,1;63 / 40 / 63;0;0;3,4;53,6;4 por fundo, a 500 / 1000 / 1500 / 2000 mm.
+F-LON-08;Testeira da longarina (b = 300 mm);Longarina;6,30;2;459,5;1051,1;1000 / 63;10;0;23,8;47,5;Peca propria de cada largura de viga. Aparafusada nas cantoneiras F-LON-03 das duas laterais.
+F-PLA-01;Fundo da forma da placa;Placa de saia;4,75;3;2200;808,1;63 / 700 / 63;19;0;66,1;198,4;Face de concreto = face aparente da placa (lado do rio).
+F-PLA-02;Nervura do fundo da placa (U);Placa de saia;4,75;12;674;148,1;63 / 40 / 63;0;0;3,7;44,7;4 por fundo, a 275 / 825 / 1375 / 1925 mm.
+F-PLA-03;Trilho longo da placa;Placa de saia;6,30;6;2012,6;213,1;150 / 75;5;0;21,1;126,9;Espessura da placa ate 150 mm (altura da face).
+F-PLA-04;Trilho curto da placa;Placa de saia;6,30;6;498;213,1;150 / 75;3;0;5,2;31,3;Entra entre os trilhos longos.

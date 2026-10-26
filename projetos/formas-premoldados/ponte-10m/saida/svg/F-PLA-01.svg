@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 2240.0 848.1" class="flat" data-codigo="F-PLA-01">
+<rect class="cut" x="0" y="0" width="2200.0" height="808.1"/>
+<line class="bend" x1="0" y1="749.6" x2="2200.0" y2="749.6"/>
+<line class="bend" x1="0" y1="58.5" x2="2200.0" y2="58.5"/>
+<circle class="hole" cx="200.0" cy="699.1" r="9.0"/>
+<circle class="hole" cx="200.0" cy="109.1" r="9.0"/>
+<circle class="hole" cx="650.0" cy="699.1" r="9.0"/>
+<circle class="hole" cx="650.0" cy="109.1" r="9.0"/>
+<circle class="hole" cx="1100.0" cy="699.1" r="9.0"/>
+<circle class="hole" cx="1100.0" cy="109.1" r="9.0"/>
+<circle class="hole" cx="1550.0" cy="699.1" r="9.0"/>
+<circle class="hole" cx="1550.0" cy="109.1" r="9.0"/>
+<circle class="hole" cx="2000.0" cy="699.1" r="9.0"/>
+<circle class="hole" cx="2000.0" cy="109.1" r="9.0"/>
+<circle class="hole" cx="55.0" cy="579.1" r="9.0"/>
+<circle class="hole" cx="55.0" cy="404.1" r="9.0"/>
+<circle class="hole" cx="55.0" cy="229.1" r="9.0"/>
+<circle class="hole" cx="2145.0" cy="579.1" r="9.0"/>
+<circle class="hole" cx="2145.0" cy="404.1" r="9.0"/>
+<circle class="hole" cx="2145.0" cy="229.1" r="9.0"/>
+<circle class="hole" cx="500.0" cy="254.1" r="7.0"/>
+<circle class="hole" cx="1700.0" cy="254.1" r="7.0"/>
+<circle class="hole" cx="1100.0" cy="404.1" r="7.0"/>
+</svg>
