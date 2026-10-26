@@ -4,8 +4,10 @@
 Gerador paramétrico das formas metálicas do kit "Ponte pré-moldada de 10 m".
 
 Gera, para cada peça de chapa das formas:
-  saida/dxf/<código>_CORTE.dxf    contorno e furos, sem mais nada (arquivo do plasma)
-  saida/dxf/<código>_DESENHO.dxf  contorno, furos, linhas de dobra, marcas e textos
+  saida/dxf/<código>_CORTE.dxf            contorno e furos, sem mais nada (arquivo do laser)
+  saida/dxf/<código>_CORTE_E_MARCA.dxf    corte + linhas para o laser só gravar (posição de
+                                          soldas), em camadas separadas; só nas peças com marca
+  saida/dxf/<código>_DESENHO.dxf          contorno, furos, linhas de dobra, marcas e textos
   saida/svg/<código>.svg          pré-visualização da planificação
   saida/tabelas/*.csv             lista de corte, tabela de dobras, compras, kit e resumo
 
@@ -73,6 +75,9 @@ DOBRA = {
     6.30: dict(ri=8.0, k=0.42, v=50),
 }
 ABA_MINIMA_FATOR = 0.7    # aba mínima ~ 0,7 x abertura do V
+# Dobradeira do fornecedor (3 m). Preencher a capacidade quando chegar a plaqueta; o
+# gerador passa a recusar dobra que exija mais que 'uso_maximo' da capacidade.
+DOBRADEIRA = dict(capacidade_tf=None, uso_maximo=0.85, comprimento_util=3000)
 DENSIDADE_ACO = 7.85e-6   # kg/mm3
 FURO_M16 = 18.0           # furo para parafuso M16
 FURO_FIXADOR = 14.0       # furo para parafuso M12
@@ -179,7 +184,8 @@ class Peca:
     furos: list = field(default_factory=list)   # (x, y, diâmetro)
     rasgos: list = field(default_factory=list)  # (x, y1, y2, largura): rasgo alinhado em y
     contorno: list = None       # contorno próprio (x, y); se vazio, retângulo
-    marcas: list = field(default_factory=list)  # (y, texto): linha de referência, não é corte
+    marcas: list = field(default_factory=list)  # (x1, y1, x2, y2): linha só para gravar
+    lado_marca: str = ""        # em que face da chapa a marca é gravada
     sentido: str = ""
     obs: str = ""
 
@@ -246,6 +252,10 @@ def pecas_forma_longarina():
     w = lat.largura
     for x in x_fix:                      # furos da base: 60 mm da face de concreto
         lat.furos.append((x, w - (100 - 60), FURO_M16))
+    y1, y2 = lat.linhas[0] + 15, lat.linhas[1] - 15
+    for i in range(1, 8):                # eixo das 7 nervuras
+        lat.marcas.append((passo_nerv * i, y1, passo_nerv * i, y2))
+    lat.lado_marca = "lado de trás, que fica por dentro das dobras"
     pecas.append(lat)
 
     # F-LON-02 nervura vertical do painel: U 63-40-63, entre as abas
@@ -286,6 +296,9 @@ def pecas_forma_longarina():
     for x in x_fix:
         fun.rasgos.append((x, yc + r1, yc + r2, FURO_M16))
         fun.rasgos.append((x, yc - r2, yc - r1, FURO_M16))
+    for x in (500, 1000, 1500, 2000):    # eixo das nervuras transversais
+        fun.marcas.append((x, fun.linhas[0] + 15, x, fun.linhas[1] - 15))
+    fun.lado_marca = "lado de baixo, que fica por dentro das dobras"
     pecas.append(fun)
 
     # F-LON-06 cantoneira do fundo
@@ -342,6 +355,9 @@ def pecas_forma_placa():
     for s in (-1, 1):                                # tubos-forma dos furos de içamento
         fun.furos.append((xc + s * 600, yc + H / 2 - 100, FURO_FIXADOR))
     fun.furos.append((xc, yc, FURO_FIXADOR))         # tubo-forma do dreno (opcional)
+    for x in (275, 825, 1375, 1925):                 # eixo das nervuras
+        fun.marcas.append((x, fun.linhas[0] + 15, x, fun.linhas[1] - 15))
+    fun.lado_marca = "lado de baixo, que fica por dentro das dobras"
     pecas.append(fun)
 
     comp_n = (H + 200) - 2 * 4.75 - 2 * DOBRA[4.75]["ri"] - 2 * 2
@@ -419,6 +435,9 @@ def pecas_forma_laje():
             mod2.append((X, Y, FURO_M16))
     girado = sorted((round(L + mx - X, 2), round(B + my - Y, 2), d) for X, Y, d in mod2)
     assert girado == sorted(fun.furos), "módulos do fundo do painel não são intercambiáveis"
+    for x in (468, 936, 1404, 1872):                 # eixo das nervuras, entre as cantoneiras
+        fun.marcas.append((x, my + 2, x, larg_base - my - 2))
+    fun.lado_marca = "lado de baixo, oposto à face de concreto (a chapa é simétrica)"
     pecas.append(fun)
 
     # ---- F-LAJ-02 cantoneira longitudinal do fundo (sob as bordas de 2340 mm)
@@ -463,8 +482,10 @@ def pecas_forma_laje():
     tl.furos.append((P["icamento_x"][0] + t_tr, tl.largura - (75 - 45), FURO_M16))
     c = P["chave"]
     alt_chave = 2 * c["aba"] + 2 * c["rebaixo"] + c["topo"]          # 140 mm
-    tl.marcas.append((tl.y_na_face(1, c["z0"]), "SOLDAR CHAVE A PARTIR DAQUI"))
-    tl.marcas.append((tl.y_na_face(1, c["z0"] + alt_chave), "LIMITE DA CHAVE"))
+    for z in (c["z0"], c["z0"] + alt_chave):         # faixa onde a régua de chave é soldada
+        ym = tl.y_na_face(1, z)
+        tl.marcas.append((t_tr, ym, t_tr + jx - 1, ym))
+    tl.lado_marca = "face de concreto, que fica por fora das dobras"
     pecas.append(tl)
 
     # ---- F-LAJ-06 régua de chave (perfil chapéu, 4 dobras de 45 graus)
@@ -551,8 +572,14 @@ def verifica(p):
         checa(x, y1, wdt, "rasgo")
         checa(x, y2, wdt, "rasgo")
     if p.linhas:
-        if p.comprimento > 3000:
+        if p.comprimento > DOBRADEIRA["comprimento_util"]:
             problemas.append(f"dobra de {p.comprimento} mm excede a dobradeira de 3 m")
+        cap = DOBRADEIRA["capacidade_tf"]
+        if cap:
+            f = forca_dobra_tf(p.t, p.comprimento)
+            if f > cap * DOBRADEIRA["uso_maximo"]:
+                problemas.append(f"dobra pede {f:.0f} tf; a dobradeira de {cap} t admite "
+                                 f"{cap * DOBRADEIRA['uso_maximo']:.0f} tf: aumentar o V")
         minimo = ABA_MINIMA_FATOR * DOBRA[p.t]["v"]
         for a in p.abas:
             if a < minimo:
@@ -615,6 +642,27 @@ def grava_dxf(p, pasta):
     desenha_geometria(doc.modelspace(), p)
     doc.saveas(os.path.join(pasta, f"{p.codigo}_CORTE.dxf"))
 
+    if p.marcas:
+        # corte e gravação no mesmo arquivo, em camadas separadas (o operador atribui a
+        # camada 2 ao processo de marcação/gravação no software do laser)
+        doc = ezdxf.new("R2000", setup=True)
+        doc.units = units.MM
+        doc.header["$INSUNITS"] = 4
+        doc.header["$MEASUREMENT"] = 1
+        doc.layers.add("1_CORTE", color=7)
+        doc.layers.add("2_SO_MARCAR", color=3)
+        msp = doc.modelspace()
+        msp.add_lwpolyline(contorno_de(p), close=True, dxfattribs={"layer": "1_CORTE"})
+        for x, y, d in p.furos:
+            msp.add_circle((x, y), d / 2, dxfattribs={"layer": "1_CORTE"})
+        for x, y1, y2, wdt in p.rasgos:
+            ya, yb, r = min(y1, y2), max(y1, y2), wdt / 2
+            msp.add_lwpolyline([(x + r, ya, 0), (x + r, yb, 1), (x - r, yb, 0), (x - r, ya, 1)],
+                               format="xyb", close=True, dxfattribs={"layer": "1_CORTE"})
+        for x1, y1, x2, y2 in p.marcas:
+            msp.add_line((x1, y1), (x2, y2), dxfattribs={"layer": "2_SO_MARCAR"})
+        doc.saveas(os.path.join(pasta, f"{p.codigo}_CORTE_E_MARCA.dxf"))
+
     doc = novo_doc()
     msp = doc.modelspace()
     desenha_geometria(msp, p)
@@ -622,10 +670,8 @@ def grava_dxf(p, pasta):
         msp.add_line((0, yl), (p.comprimento, yl), dxfattribs={"layer": "DOBRA"})
         msp.add_text(f"DOBRA {i} - {fmt(ang)} GRAUS", height=max(4.0, min(8.0, p.largura / 20)),
                      dxfattribs={"layer": "TEXTO"}).set_placement((10, yl + 2))
-    for ym, texto in p.marcas:
-        msp.add_line((0, ym), (p.comprimento, ym), dxfattribs={"layer": "MARCA"})
-        msp.add_text(texto, height=6, dxfattribs={"layer": "TEXTO"}).set_placement(
-            (p.comprimento * 0.6, ym + 2))
+    for x1, y1, x2, y2 in p.marcas:
+        msp.add_line((x1, y1), (x2, y2), dxfattribs={"layer": "MARCA"})
     h = max(6.0, min(30.0, max(p.comprimento, p.largura) / 40))
     linhas_txt = [
         f"{p.codigo}  {sem_acento(p.nome).upper()}",
@@ -653,9 +699,9 @@ def grava_svg(p, pasta):
     for yl in p.linhas:
         out.append(f'<line class="bend" x1="0" y1="{Y(yl):.1f}" x2="{p.comprimento:.1f}" '
                    f'y2="{Y(yl):.1f}"/>')
-    for ym, _ in p.marcas:
-        out.append(f'<line class="mark" x1="0" y1="{Y(ym):.1f}" x2="{p.comprimento:.1f}" '
-                   f'y2="{Y(ym):.1f}"/>')
+    for x1, y1, x2, y2 in p.marcas:
+        out.append(f'<line class="mark" x1="{x1:.1f}" y1="{Y(y1):.1f}" x2="{x2:.1f}" '
+                   f'y2="{Y(y2):.1f}"/>')
     for x, y, d in p.furos:
         out.append(f'<circle class="hole" cx="{x:.1f}" cy="{Y(y):.1f}" r="{d / 2:.1f}"/>')
     for x, y1, y2, wdt in p.rasgos:

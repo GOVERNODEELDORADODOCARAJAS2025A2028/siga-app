@@ -2,6 +2,13 @@
 <polygon class="cut" points="0.0,1157.1 2500.0,1157.1 2500.0,0.0 0.0,0.0"/>
 <line class="bend" x1="0" y1="1086.6" x2="2500.0" y2="1086.6"/>
 <line class="bend" x1="0" y1="95.5" x2="2500.0" y2="95.5"/>
+<line class="mark" x1="312.5" y1="1071.6" x2="312.5" y2="110.5"/>
+<line class="mark" x1="625.0" y1="1071.6" x2="625.0" y2="110.5"/>
+<line class="mark" x1="937.5" y1="1071.6" x2="937.5" y2="110.5"/>
+<line class="mark" x1="1250.0" y1="1071.6" x2="1250.0" y2="110.5"/>
+<line class="mark" x1="1562.5" y1="1071.6" x2="1562.5" y2="110.5"/>
+<line class="mark" x1="1875.0" y1="1071.6" x2="1875.0" y2="110.5"/>
+<line class="mark" x1="2187.5" y1="1071.6" x2="2187.5" y2="110.5"/>
 <circle class="hole" cx="156.2" cy="40.0" r="9.0"/>
 <circle class="hole" cx="1093.8" cy="40.0" r="9.0"/>
 <circle class="hole" cx="1406.2" cy="40.0" r="9.0"/>

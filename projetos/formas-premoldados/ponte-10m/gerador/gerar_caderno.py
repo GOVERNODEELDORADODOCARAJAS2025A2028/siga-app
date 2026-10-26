@@ -234,8 +234,8 @@ def svg_cotado(p):
         linha(0, yl, L, yl, "bend")
         linha(L, yl, L + 0.3 * fs, ye, "tick")
         texto(L + 0.4 * fs, ye - 0.32 * fs, f"D{i} {f1(ang)}°", "lb", 0.82, "start")
-    for ym, _ in p.marcas:
-        linha(0, ym, L, ym, "mark")
+    for x1, y1, x2, y2 in p.marcas:
+        linha(x1, y1, x2, y2, "mark")
 
     # furos e rasgos numerados
     k = 0
@@ -372,8 +372,9 @@ def svg_perfil(p):
 # folhas
 # --------------------------------------------------------------------------
 class Caderno:
-    def __init__(self):
+    def __init__(self, linha2="Planificações em mm · origem no canto da borda A"):
         self.folhas = []
+        self.linha2 = linha2
 
     def add(self, titulo, corpo, cod=""):
         self.folhas.append((titulo, corpo, cod))
@@ -387,7 +388,7 @@ class Caderno:
 <div class="cod">{esc(cod)}</div></div>
 {corpo}
 <div class="carimbo">
-<div><b>Projeto</b>{esc(PROJETO)}<br>Planificações em mm · origem no canto da borda A</div>
+<div><b>Projeto</b>{esc(PROJETO)}<br>{esc(self.linha2)}</div>
 <div><b>Situação</b><span class="alerta">Anteprojeto. Não cortar sem ART do engenheiro e sem a
 tabela de dobra do fornecedor.</span></div>
 <div><b>Dados de dobra (provisórios)</b>3,00: ri 3,5 · 4,75: ri 6 · 6,30: ri 8 · K 0,42</div>
@@ -409,7 +410,7 @@ def folha_capa(cad, pecas):
     total = sum(p.peso * p.qtd for p in pecas)
     corpo = f"""<div class="capa">
 <div style="display:grid;gap:4mm;align-content:start">
-<div><h1>Caderno de fabricação</h1><p class="lead">Formas metálicas de chapa cortada no plasma e
+<div><h1>Caderno de fabricação</h1><p class="lead">Formas metálicas de chapa cortada a laser e
 dobrada, para as peças pré-moldadas da ponte de dois vãos de 10 m e 4,50 m de largura. Cada peça
 tem uma folha com a planificação cotada, a sequência de dobras e as coordenadas dos furos.</p></div>
 <table class="tab"><thead><tr><th>Forma</th><th>Faz</th><th>Jogo</th><th>Tipos</th><th>Peças</th>
@@ -423,7 +424,9 @@ arquivos são gerados de novo com esses dados; (4) corta-se e monta-se um módul
 <div style="display:grid;gap:3mm;align-content:start">
 <h2 style="margin:0;font-size:12pt">Como ler os arquivos</h2>
 <ol>
-<li><b>_CORTE.dxf</b> vai para o plasma: só contorno e furos, em mm, DXF R2000.</li>
+<li><b>_CORTE.dxf</b> vai para o laser: só contorno e furos, em mm, DXF R2000.</li>
+<li><b>_CORTE_E_MARCA.dxf</b> (peças com solda posicionada): camada 1_CORTE para cortar e camada
+2_SO_MARCAR para o laser só gravar a posição das nervuras e da régua de chave.</li>
 <li><b>_DESENHO.dxf</b> é para conferência: tem linhas de dobra (camada DOBRA), marcas de solda
 (MARCA) e textos (TEXTO). Não mandar para corte.</li>
 <li>Nas folhas, a origem (0; 0) é o canto esquerdo da <b>borda A</b>. As dobras estão medidas das
@@ -489,8 +492,9 @@ def folha_peca(cad, p):
         else " / ".join(f1(a) for a in p.abas)
     marcas = ""
     if p.marcas:
-        marcas = "<div class='legenda'>Marcas (verde tracejado): " + "; ".join(
-            f"y = {f1(y)} mm, {esc(t.lower())}" for y, t in p.marcas) + "</div>"
+        marcas = (f"<div class='legenda'><b>Marcas de solda</b> (verde tracejado): gravar a laser "
+                  f"no {esc(p.lado_marca)}. Arquivo {p.codigo}_CORTE_E_MARCA.dxf, camada "
+                  f"2_SO_MARCAR.</div>")
     if p.linhas:
         esquerda = (f"<div class='pilha'><div class='desenho'>{svg_cotado(p)}</div>"
                     f"<div class='desenho perfilbox'><div class='rot'>Perfil dobrado · medidas "

@@ -195,8 +195,12 @@ sarrafeado pelas abas dos trilhos.
 
 ## 8. Arquivos para o fornecedor
 
-- `saida/dxf/<código>_CORTE.dxf`: **o arquivo do plasma**. Tem só contorno e furos, em mm,
+- `saida/dxf/<código>_CORTE.dxf`: **o arquivo do laser**. Tem só contorno e furos, em mm,
   formato DXF R2000.
+- `saida/dxf/<código>_CORTE_E_MARCA.dxf` (F-LON-01, F-LON-05, F-PLA-01, F-LAJ-01 e F-LAJ-05):
+  o mesmo corte na camada `1_CORTE` e, na camada `2_SO_MARCAR`, as linhas que o laser só grava
+  (eixo das nervuras e faixa da régua de chave). O operador atribui a camada 2 ao processo de
+  marcação. Na dúvida, usa o `_CORTE.dxf`.
 - `saida/dxf/<código>_DESENHO.dxf`: conferência. Traz as linhas de dobra (camada DOBRA), as
   marcas de solda (camada MARCA) e os textos (camada TEXTO). **Não mandar este arquivo para
   corte.**
@@ -218,12 +222,39 @@ de 130 tf. A de 4,75 mm (painel F-LON-01) pede cerca de 95 tf. Se a máquina tiv
 isso, as opções são fundo em 4,75 mm apoiado em base contínua, ou V maior (menos força,
 raio maior).
 
+## 8a. Máquinas do fornecedor
+
+As fotos da oficina do fornecedor mostram que a máquina de corte é **a laser de fibra, de cerca
+de 3 kW**, e não plasma. O resfriador S&A CWFL-3000, de dois circuitos, é indicado pelo fabricante
+para laser de fibra de 3.000 W, e o compressor DEHAHA DBZY-20A é de 16 bar, para linha de corte a
+laser. A marca da máquina não aparece nas fotos. A dobradeira, de 3 m e da mesma marca, aparece
+ao fundo, sem plaqueta legível.
+
+Tudo cabe numa mesa de 3000 × 1500 mm: a maior peça é o painel lateral da longarina (2500 ×
+1157 mm). As chapas de 3,00 a 6,30 mm estão bem abaixo da espessura que um laser de fibra de
+3 kW corta.
+
+`saida/ficha/ficha_fornecedor_laser_dobradeira.pdf` lista os dados que faltam (plaquetas,
+tabela de força, matrizes, raio e fator K, comando) e o que muda conforme a força da
+dobradeira:
+
+| Dobradeira | O que muda |
+|---|---|
+| 160 t ou mais | Nada |
+| 125 t | Fundo da longarina (6,30 × 2500 mm): V50 → V63 |
+| 100 t | Fundo da longarina V80; painel lateral da longarina V50; trilho da placa V63; cantoneira longitudinal do painel V50 |
+| 80 t | Seis peças com V maior (detalhe na ficha) |
+
+Quando a plaqueta chegar, basta preencher `DOBRADEIRA["capacidade_tf"]` em
+`gerar_formas.py`: o gerador recusa qualquer dobra acima de 85% da capacidade.
+
 ## 9. Como gerar de novo
 
 ```
 pip install ezdxf
 python3 gerador/gerar_formas.py      # DXF, SVG e tabelas
 python3 gerador/gerar_caderno.py     # caderno em PDF (precisa de Node com Playwright)
+python3 gerador/gerar_ficha.py       # ficha para o fornecedor em PDF
 ```
 
 As dimensões ficam no topo de `gerar_formas.py`: `VIGA`, `PLACA`, `PAINEL` e `DOBRA`. O
