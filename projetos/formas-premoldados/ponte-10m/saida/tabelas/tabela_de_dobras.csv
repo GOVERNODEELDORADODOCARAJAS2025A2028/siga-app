@@ -1,32 +1,32 @@
 codigo;dobra;angulo_graus;distancia_da_borda_A_mm;distancia_da_borda_B_mm;encosto_sugerido;aba_do_lado_do_encosto_mm;comprimento_da_dobra_mm;chapa_mm;raio_interno_mm;fator_K;V_matriz_mm;forca_estimada_tf;sentido
-F-LON-01;1;90;70,5;1086,6;A;75;2500;4,75;6;0.42;40;93,4;as duas abas para trás, lado oposto à face de concreto
-F-LON-01;2;90;1061,6;95,5;B;100;2500;4,75;6;0.42;40;93,4;as duas abas para trás, lado oposto à face de concreto
-F-LON-02;1;90;58,5;89,6;A;63;974;4,75;6;0.42;40;36,4;U: as duas abas para o mesmo lado
-F-LON-02;2;90;89,6;58,5;B;63;974;4,75;6;0.42;40;36,4;U: as duas abas para o mesmo lado
-F-LON-03;1;90;57,1;69,1;A;63;974;6,30;8;0.42;50;51,2;uma dobra de 90 graus
-F-LON-05;1;90;69,1;697,2;A;75;2500;6,30;8;0.42;50;131,5;as duas abas para baixo, lado oposto à face de concreto
-F-LON-05;2;90;697,2;69,1;B;75;2500;6,30;8;0.42;50;131,5;as duas abas para baixo, lado oposto à face de concreto
-F-LON-06;1;90;57,1;69,1;A;63;607;6,30;8;0.42;50;31,9;uma dobra de 90 graus
-F-LON-07;1;90;58,5;89,6;A;63;607;4,75;6;0.42;40;22,7;U: as duas abas para o mesmo lado
-F-LON-07;2;90;89,6;58,5;B;63;607;4,75;6;0.42;40;22,7;U: as duas abas para o mesmo lado
-F-LON-08;1;90;994,1;57,1;B;63;459,5;6,30;8;0.42;50;24,2;aba superior para fora, lado oposto ao concreto
-F-PLA-01;1;90;58,5;749,6;A;63;2200;4,75;6;0.42;40;82,2;as duas abas para baixo, lado oposto à face de concreto
-F-PLA-01;2;90;749,6;58,5;B;63;2200;4,75;6;0.42;40;82,2;as duas abas para baixo, lado oposto à face de concreto
-F-PLA-02;1;90;58,5;89,6;A;63;674;4,75;6;0.42;40;25,2;U: as duas abas para o mesmo lado
-F-PLA-02;2;90;89,6;58,5;B;63;674;4,75;6;0.42;40;25,2;U: as duas abas para o mesmo lado
-F-PLA-03;1;90;144,1;69,1;B;75;2012,6;6,30;8;0.42;50;105,9;pé para fora, lado oposto ao concreto
-F-PLA-04;1;90;144,1;69,1;B;75;498;6,30;8;0.42;50;26,2;pé para fora, lado oposto ao concreto
-F-LAJ-02;1;90;58,5;95,5;A;63;2340;4,75;6;0.42;40;87,5;uma dobra de 90 graus
-F-LAJ-03;1;90;69,1;69,1;A;75;1226;6,30;8;0.42;50;64,5;uma dobra de 90 graus
-F-LAJ-04;1;90;58,5;89,6;A;63;1226;4,75;6;0.42;40;45,8;U: as duas abas para o mesmo lado
-F-LAJ-04;2;90;89,6;58,5;B;63;1226;4,75;6;0.42;40;45,8;U: as duas abas para o mesmo lado
-F-LAJ-05;1;90;70,5;261,6;A;75;2254,8;4,75;6;0.42;40;84,3;pé e aba superior para fora, lado oposto ao concreto
-F-LAJ-05;2;90;261,6;70,5;B;75;2254,8;4,75;6;0.42;40;84,3;pé e aba superior para fora, lado oposto ao concreto
-F-LAJ-06;1;45;19,2;134,9;A;20;2249;3,00;3,5;0.42;20;67,1;perfil chapéu: dobras 1 e 4 num sentido, 2 e 3 no sentido contrário
-F-LAJ-06;2;45;52,9;101,2;A;;2249;3,00;3,5;0.42;20;67,1;perfil chapéu: dobras 1 e 4 num sentido, 2 e 3 no sentido contrário
-F-LAJ-06;3;45;101,2;52,9;B;;2249;3,00;3,5;0.42;20;67,1;perfil chapéu: dobras 1 e 4 num sentido, 2 e 3 no sentido contrário
-F-LAJ-06;4;45;134,9;19,2;B;20;2249;3,00;3,5;0.42;20;67,1;perfil chapéu: dobras 1 e 4 num sentido, 2 e 3 no sentido contrário
-F-LAJ-07;1;90;70,5;261,6;A;75;1228;4,75;6;0.42;40;45,9;pé e aba superior para fora, lado oposto ao concreto
-F-LAJ-07;2;90;261,6;70,5;B;75;1228;4,75;6;0.42;40;45,9;pé e aba superior para fora, lado oposto ao concreto
-F-LAJ-11;1;90;35,5;89,6;A;40;1389,5;4,75;6;0.42;40;51,9;U: as duas abas para cima
-F-LAJ-11;2;90;89,6;35,5;B;40;1389,5;4,75;6;0.42;40;51,9;U: as duas abas para cima
+F-LON-01;1;90;70,5;1086,6;A;75;2500;4,75;6;0.42;40;93,4;abas superior e de base voltadas para a face posterior
+F-LON-01;2;90;1061,6;95,5;B;100;2500;4,75;6;0.42;40;93,4;abas superior e de base voltadas para a face posterior
+F-LON-02;1;90;58,5;89,6;A;63;974;4,75;6;0.42;40;36,4;perfil U, abas para o mesmo lado
+F-LON-02;2;90;89,6;58,5;B;63;974;4,75;6;0.42;40;36,4;perfil U, abas para o mesmo lado
+F-LON-03;1;90;57,1;69,1;A;63;974;6,30;8;0.42;50;51,2;dobra única de 90 graus
+F-LON-05;1;90;69,1;697,2;A;75;2500;6,30;8;0.42;50;131,5;abas voltadas para baixo, lado oposto à face de concreto
+F-LON-05;2;90;697,2;69,1;B;75;2500;6,30;8;0.42;50;131,5;abas voltadas para baixo, lado oposto à face de concreto
+F-LON-06;1;90;57,1;69,1;A;63;607;6,30;8;0.42;50;31,9;dobra única de 90 graus
+F-LON-07;1;90;58,5;89,6;A;63;607;4,75;6;0.42;40;22,7;perfil U, abas para o mesmo lado
+F-LON-07;2;90;89,6;58,5;B;63;607;4,75;6;0.42;40;22,7;perfil U, abas para o mesmo lado
+F-LON-08;1;90;994,1;57,1;B;63;459,5;6,30;8;0.42;50;24,2;aba superior voltada para fora, lado oposto ao concreto
+F-PLA-01;1;90;58,5;749,6;A;63;2200;4,75;6;0.42;40;82,2;abas voltadas para baixo, lado oposto à face de concreto
+F-PLA-01;2;90;749,6;58,5;B;63;2200;4,75;6;0.42;40;82,2;abas voltadas para baixo, lado oposto à face de concreto
+F-PLA-02;1;90;58,5;89,6;A;63;674;4,75;6;0.42;40;25,2;perfil U, abas para o mesmo lado
+F-PLA-02;2;90;89,6;58,5;B;63;674;4,75;6;0.42;40;25,2;perfil U, abas para o mesmo lado
+F-PLA-03;1;90;144,1;69,1;B;75;2012,6;6,30;8;0.42;50;105,9;aba de apoio voltada para fora, lado oposto ao concreto
+F-PLA-04;1;90;144,1;69,1;B;75;498;6,30;8;0.42;50;26,2;aba de apoio voltada para fora, lado oposto ao concreto
+F-LAJ-02;1;90;58,5;95,5;A;63;2340;4,75;6;0.42;40;87,5;dobra única de 90 graus
+F-LAJ-03;1;90;69,1;69,1;A;75;1226;6,30;8;0.42;50;64,5;dobra única de 90 graus
+F-LAJ-04;1;90;58,5;89,6;A;63;1226;4,75;6;0.42;40;45,8;perfil U, abas para o mesmo lado
+F-LAJ-04;2;90;89,6;58,5;B;63;1226;4,75;6;0.42;40;45,8;perfil U, abas para o mesmo lado
+F-LAJ-05;1;90;70,5;261,6;A;75;2340;4,75;6;0.42;40;87,5;"abas voltadas para fora, lado oposto ao concreto; face gravada no lado externo das dobras"
+F-LAJ-05;2;90;261,6;70,5;B;75;2340;4,75;6;0.42;40;87,5;"abas voltadas para fora, lado oposto ao concreto; face gravada no lado externo das dobras"
+F-LAJ-06;1;45;19,2;134,9;A;20;2249;3,00;3,5;0.42;20;67,1;perfil cartola: dobras 1 e 4 em um sentido, 2 e 3 no sentido oposto
+F-LAJ-06;2;45;52,9;101,2;A;;2249;3,00;3,5;0.42;20;67,1;perfil cartola: dobras 1 e 4 em um sentido, 2 e 3 no sentido oposto
+F-LAJ-06;3;45;101,2;52,9;B;;2249;3,00;3,5;0.42;20;67,1;perfil cartola: dobras 1 e 4 em um sentido, 2 e 3 no sentido oposto
+F-LAJ-06;4;45;134,9;19,2;B;20;2249;3,00;3,5;0.42;20;67,1;perfil cartola: dobras 1 e 4 em um sentido, 2 e 3 no sentido oposto
+F-LAJ-07;1;90;70,5;261,6;A;75;1228;4,75;6;0.42;40;45,9;abas voltadas para fora, lado oposto ao concreto
+F-LAJ-07;2;90;261,6;70,5;B;75;1228;4,75;6;0.42;40;45,9;abas voltadas para fora, lado oposto ao concreto
+F-LAJ-11;1;90;35,5;89,6;A;40;1389,5;4,75;6;0.42;40;51,9;perfil U, abas voltadas para cima
+F-LAJ-11;2;90;89,6;35,5;B;40;1389,5;4,75;6;0.42;40;51,9;perfil U, abas voltadas para cima

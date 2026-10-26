@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 2380.0 194.1" class="flat" data-codigo="F-LAJ-02">
 <polygon class="cut" points="0.0,154.1 2340.0,154.1 2340.0,0.0 0.0,0.0"/>
 <line class="bend" x1="0" y1="95.5" x2="2340.0" y2="95.5"/>
-<circle class="hole" cx="240.0" cy="45.0" r="9.0"/>
-<circle class="hole" cx="690.0" cy="45.0" r="9.0"/>
-<circle class="hole" cx="1140.0" cy="45.0" r="9.0"/>
-<circle class="hole" cx="1590.0" cy="45.0" r="9.0"/>
-<circle class="hole" cx="2040.0" cy="45.0" r="9.0"/>
-<circle class="hole" cx="2240.0" cy="45.0" r="9.0"/>
+<circle class="hole" cx="150.0" cy="45.0" r="9.0"/>
+<circle class="hole" cx="570.0" cy="45.0" r="9.0"/>
+<circle class="hole" cx="990.0" cy="45.0" r="9.0"/>
+<circle class="hole" cx="1350.0" cy="45.0" r="9.0"/>
+<circle class="hole" cx="1770.0" cy="45.0" r="9.0"/>
+<circle class="hole" cx="2190.0" cy="45.0" r="9.0"/>
 </svg>

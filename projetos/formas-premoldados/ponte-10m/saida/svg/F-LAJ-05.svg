@@ -1,14 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 2294.8 372.1" class="flat" data-codigo="F-LAJ-05">
-<polygon class="cut" points="0.0,332.1 2254.8,332.1 2254.8,0.0 0.0,0.0"/>
-<line class="bend" x1="0" y1="261.6" x2="2254.8" y2="261.6"/>
-<line class="bend" x1="0" y1="70.5" x2="2254.8" y2="70.5"/>
-<line class="mark" x1="4.8" y1="236.1" x2="2253.8" y2="236.1"/>
-<line class="mark" x1="4.8" y1="96.1" x2="2253.8" y2="96.1"/>
-<circle class="hole" cx="154.8" cy="302.1" r="9.0"/>
-<circle class="hole" cx="604.8" cy="302.1" r="9.0"/>
-<circle class="hole" cx="1054.8" cy="302.1" r="9.0"/>
-<circle class="hole" cx="1504.8" cy="302.1" r="9.0"/>
-<circle class="hole" cx="1954.8" cy="302.1" r="9.0"/>
-<circle class="hole" cx="2154.8" cy="302.1" r="9.0"/>
-<circle class="hole" cx="904.8" cy="30.0" r="9.0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 2380.0 372.1" class="flat" data-codigo="F-LAJ-05">
+<polygon class="cut" points="0.0,332.1 2340.0,332.1 2340.0,0.0 0.0,0.0"/>
+<line class="bend" x1="0" y1="261.6" x2="2340.0" y2="261.6"/>
+<line class="bend" x1="0" y1="70.5" x2="2340.0" y2="70.5"/>
+<line class="mark" x1="90.0" y1="236.1" x2="2339.0" y2="236.1"/>
+<line class="mark" x1="90.0" y1="96.1" x2="2339.0" y2="96.1"/>
+<circle class="hole" cx="150.0" cy="302.1" r="9.0"/>
+<circle class="hole" cx="150.0" cy="30.0" r="9.0"/>
+<circle class="hole" cx="570.0" cy="302.1" r="9.0"/>
+<circle class="hole" cx="570.0" cy="30.0" r="9.0"/>
+<circle class="hole" cx="990.0" cy="302.1" r="9.0"/>
+<circle class="hole" cx="990.0" cy="30.0" r="9.0"/>
+<circle class="hole" cx="1350.0" cy="302.1" r="9.0"/>
+<circle class="hole" cx="1350.0" cy="30.0" r="9.0"/>
+<circle class="hole" cx="1770.0" cy="302.1" r="9.0"/>
+<circle class="hole" cx="1770.0" cy="30.0" r="9.0"/>
+<circle class="hole" cx="2190.0" cy="302.1" r="9.0"/>
+<circle class="hole" cx="2190.0" cy="30.0" r="9.0"/>
 </svg>

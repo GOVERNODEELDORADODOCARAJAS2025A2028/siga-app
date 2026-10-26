@@ -1,4 +1,4 @@
 Longarina: 142 peças de chapa, 1778 kg de aço
 Placa de saia: 27 peças de chapa, 401 kg de aço
-Painel de laje: 140 peças de chapa, 1437 kg de aço
-Total: 3617 kg
+Painel de laje: 140 peças de chapa, 1445 kg de aço
+Total: 3625 kg
