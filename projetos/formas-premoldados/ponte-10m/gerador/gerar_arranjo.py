@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Prancha de arranjo geral da ponte pré-moldada de dois vãos de 10 m (formato A1).
+Prancha de arranjo geral da ponte pré-moldada de vão único de 10 m (formato A1).
 
 Gera saida/pranchas/AG-01_arranjo_geral_A1.pdf: corte longitudinal (1:50), seção transversal
 do tabuleiro (1:25), cabeceira vista do curso d'água (1:50), planta do pilar com as ranhuras
@@ -32,8 +32,6 @@ LEG_B1 = [
     "LAJE DE TRANSIÇÃO P-10",
     "SAPATA P-09, COM CALCANHAR SOB O ATERRO",
     "APARELHO DE APOIO DE ELASTÔMERO FRETADO",
-    "PILAR DO APOIO CENTRAL P-06",
-    "BLOCO E ESTACAS MOLDADOS NO LOCAL",
     "ENROCAMENTO DE PROTEÇÃO CONTRA EROSÃO",
 ]
 LEG_B2 = [
@@ -68,8 +66,11 @@ NOTAS = [
     "ambiental, cobrimentos e relação água/cimento definidos no projeto estrutural.",
     "Aparelhos de apoio de elastômero fretado conforme ABNT NBR 19783; dimensões de referência "
     "de 250 × 300 mm, a confirmar no projeto estrutural.",
-    "Cota de máxima cheia, borda livre e proteção contra socavação definidas por estudo "
-    "hidrológico e hidráulico. O enrocamento indicado é esquemático.",
+    "Vão único, sem apoio no leito do curso d'água. Abertura livre de 9,00 m entre as faces "
+    "dos pilares das cabeceiras; verificar a suficiência da seção de vazão no estudo "
+    "hidrológico.",
+    "Cota de máxima cheia, borda livre e proteção contra socavação das cabeceiras definidas "
+    "por estudo hidrológico e hidráulico. O enrocamento indicado é esquemático.",
     "Cabeceiras com função de contenção do aterro: pilares-contraforte de 0,30 × 0,70 m e "
     "sapatas corridas segmentadas em pré-dimensionamento. Estabilidade ao tombamento e ao "
     "deslizamento e tensões no solo verificadas no projeto executivo.",
@@ -132,18 +133,18 @@ def main():
     b2 = fl.vista(dz.secao_transversal(25), "SEÇÃO TRANSVERSAL DO TABULEIRO SOBRE A TRAVESSA",
                   "1:25")
     b3 = fl.vista(dz.cabeceira_frontal(50), "CABECEIRA – VISTA PELO CURSO D'ÁGUA", "1:50")
-    b4 = fl.vista(dz.planta_pilar(10), "PLANTA DO PILAR CENTRAL DA CABECEIRA", "1:10",
+    b4 = fl.vista(dz.planta_pilar(10), "PLANTA DO PILAR INTERMEDIÁRIO DA CABECEIRA", "1:10",
                   "RANHURAS E PLACAS DE SAIA ENCAIXADAS")
     direita = (f'<div class="pilha">{legenda_numerada("LEGENDA DO CORTE LONGITUDINAL", LEG_B1)}'
                f'{legenda_numerada("LEGENDA DA SEÇÃO TRANSVERSAL", LEG_B2)}'
-               f'{legenda_numerada("LEGENDA DA CABECEIRA", LEG_B3)}{convencoes()}'
-               f'{fl.notas("NOTAS GERAIS", NOTAS)}</div>')
-    conteudo = (fl.bloco(4, 6, 622, 252, b1)
+               f'{legenda_numerada("LEGENDA DA CABECEIRA", LEG_B3)}{convencoes()}</div>')
+    conteudo = (fl.bloco(4, 6, 420, 226, b1)
+                + fl.bloco(432, 6, 192, 182, b4)
                 + fl.bloco(632, 6, 175, 499, direita)
-                + fl.bloco(4, 266, 262, 182, b2)
-                + fl.bloco(272, 266, 150, 200, b3)
-                + fl.bloco(428, 266, 170, 182, b4)
-                + fl.bloco(4, 472, 600, 98, quadro_elementos()))
+                + fl.bloco(4, 240, 262, 182, b2)
+                + fl.bloco(272, 240, 150, 200, b3)
+                + fl.bloco(432, 196, 192, 258, fl.notas("NOTAS GERAIS", NOTAS))
+                + fl.bloco(4, 462, 600, 100, quadro_elementos()))
     doc.folha("ARRANJO GERAL – CORTE LONGITUDINAL, SEÇÃO TRANSVERSAL E CABECEIRA", "INDICADAS",
               conteudo)
     html_path = os.path.join(PASTA, "AG-01_arranjo_geral_A1.html")

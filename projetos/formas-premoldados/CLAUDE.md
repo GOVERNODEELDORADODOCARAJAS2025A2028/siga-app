@@ -2,7 +2,7 @@
 
 Projetos de fôrmas de chapa cortada a laser de fibra (cerca de 3 kW) e dobrada (dobradeira de
 3 m, da mesma marca do laser), para peças pré-moldadas de concreto. O primeiro é o kit da ponte
-de 2 × 10 m em `ponte-10m/`. Capacidade nominal e ferramental da dobradeira ainda não
+de vão único de 10 m em `ponte-10m/`. Capacidade nominal e ferramental da dobradeira ainda não
 confirmados.
 
 ## Padrão de entrega (pedido do usuário)

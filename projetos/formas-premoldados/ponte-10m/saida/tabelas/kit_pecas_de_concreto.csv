@@ -1,10 +1,9 @@
 codigo;peca;dimensoes_m;volume_unit_m3;peso_unit_t;qtd;volume_total_m3;forma
-P-01;Longarina;0,30 x 0,90 x 10,00;2,700;6,75;8;21,60;F-LON
-P-02;Painel de laje de espessura total, com 8 nichos;4,50 x 1,23 x 0,20;1,003;2,51;16;16,04;F-LAJ
-P-03;"Guarda-rodas, módulo de 2,50 m (seção a definir; área de referência 0,20 m²)";2,50 de comprimento;0,500;1,25;16;8,00;F-GUA
-P-04;Travessa das cabeceiras e do apoio central;4,64 x 0,90 x 0,60;2,506;6,26;3;7,52;F-TRA
+P-01;Longarina;0,30 x 0,90 x 10,00;2,700;6,75;4;10,80;F-LON
+P-02;Painel de laje de espessura total, com 8 nichos;4,50 x 1,23 x 0,20;1,003;2,51;8;8,02;F-LAJ
+P-03;"Guarda-rodas, módulo de 2,50 m (seção a definir; área de referência 0,20 m²)";2,50 de comprimento;0,500;1,25;8;4,00;F-GUA
+P-04;Travessa das cabeceiras;4,64 x 0,90 x 0,60;2,506;6,26;2;5,01;F-TRA
 P-05;Pilar de cabeceira com ranhura;0,30 x 0,70 x 4,10;0,796;1,99;6;4,78;F-PIL
-P-06;"Pilar do apoio central (comprimento a definir; valores por metro)";0,30 x 0,70 x 1,00;0,210;0,53;3;0,63;F-PIL
 P-07;Placa de saia;2,00 x 0,50 x 0,15;0,150;0,38;24;3,60;F-PLA
 P-08;Cortina, 2 painéis por cabeceira;2,32 x 1,16 x 0,25;0,673;1,68;4;2,69;F-COR
 P-09;Sapata em segmento, com cálice (dimensões após sondagem);1,68 x 3,20 x 1,30 (referência);3,949;9,87;6;23,69;F-SAP

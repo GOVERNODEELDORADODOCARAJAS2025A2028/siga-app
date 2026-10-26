@@ -28,9 +28,9 @@ FORMAS = [
     ("Longarina", "F-LON", "FÔRMA DA LONGARINA", "LONGARINA P-01, 300 × 900 × 10000",
      "1 JOGO DE 4 MÓDULOS DE 2500"),
     ("Placa de saia", "F-PLA", "FÔRMA DA PLACA DE SAIA", "PLACA DE SAIA P-07, 2000 × 500 × 150",
-     "3 FÔRMAS"),
+     f"{gf.FORMAS_PLACA} FÔRMAS"),
     ("Painel de laje", "F-LAJ", "FÔRMA DO PAINEL DE LAJE", "PAINEL DE LAJE P-02, 4500 × 1230 × 200",
-     "2 FÔRMAS"),
+     f"{gf.FORMAS_PAINEL} FÔRMA" if gf.FORMAS_PAINEL == 1 else f"{gf.FORMAS_PAINEL} FÔRMAS"),
 ]
 
 GRAVACAO = {
@@ -423,7 +423,7 @@ def folha_conjunto_longarina(doc, pecas):
     obs = fl.notas("NOTAS", [
         "Larguras de viga de 250 mm a 360 mm pelos rasgos do fundo; a testeira é específica de "
         "cada largura. Altura de viga até 1000 mm.",
-        "Viga de 5000 mm com 2 módulos e testeiras na mesma fôrma.",
+        "A mesma fôrma permite vigas de 5000 mm, com 2 módulos e as mesmas testeiras.",
     ])
     conteudo = (fl.bloco(4, 4, 150, 166, sec)
                 + fl.bloco(160, 4, 226, 52, pla)
@@ -436,7 +436,7 @@ def folha_conjunto_longarina(doc, pecas):
 def folha_conjunto_placa(doc, pecas):
     sec = fl.vista(dz.secao_forma_placa(5), "SEÇÃO TRANSVERSAL DA FÔRMA", "1:5")
     lm = lista_materiais(pecas, "Placa de saia", compras("placa"),
-                         "LISTA DE MATERIAIS – 3 FÔRMAS")
+                         f"LISTA DE MATERIAIS – {gf.FORMAS_PLACA} FÔRMAS")
     soldas = quadro_soldas([
         ["F-PLA-02 EM F-PLA-01", "FILETE", "4 mm", "INTERMITENTE 50 mm A CADA 150 mm, NAS DUAS "
          "ABAS", "FACE INFERIOR"],
@@ -454,7 +454,8 @@ def folha_conjunto_placa(doc, pecas):
         "A placa é moldada com a face aparente sobre o fundo; essa face fica voltada para o curso "
         "d'água e é também a face tracionada pelo empuxo: armadura principal junto ao fundo, "
         "conforme projeto estrutural.",
-        "Com 3 fôrmas, as 24 placas da obra são moldadas em 8 ciclos de concretagem.",
+        f"Com {gf.FORMAS_PLACA} fôrmas, as 24 placas da obra são moldadas em "
+        f"{-(-24 // gf.FORMAS_PLACA)} ciclos de concretagem.",
     ])
     conteudo = (fl.bloco(4, 4, 206, 98, sec)
                 + fl.bloco(216, 4, 170, 120, lm)
@@ -483,7 +484,8 @@ def folha_conjunto_painel(doc, pecas):
                     titulo="LEGENDA DA PLANTA", classes=["c", ""], larguras=["10%", "90%"])
     notas_p = fl.notas("NOTAS", [
         "Painel de 4500 × 1230 × 200 em módulo de 1250 ao longo da ponte, com junta de 20 mm "
-        "entre painéis; 16 painéis na obra, moldados em 2 fôrmas.",
+        f"entre painéis; {gf.N_PAINEIS} painéis na obra, moldados em "
+        f"{gf.FORMAS_PAINEL} fôrma, em {-(-gf.N_PAINEIS // gf.FORMAS_PAINEL)} ciclos.",
         "Fundo da fôrma em dois módulos iguais, intercambiáveis por giro de 180°; junta dos "
         "módulos no eixo do painel.",
         "Nichos sobre as longarinas preenchidos com graute na montagem, conforme projeto "
@@ -495,9 +497,9 @@ def folha_conjunto_painel(doc, pecas):
                 + fl.bloco(4, 140, 200, 70, cor)
                 + fl.bloco(210, 140, 176, 70, notas_p))
     doc.folha("FÔRMA DO PAINEL DE LAJE – CONJUNTO", "INDICADAS", conteudo)
-    lm = lista_materiais(pecas, "Painel de laje", compras("painel", "nicho", "nivelamento",
-                                                          "içamento"),
-                         "LISTA DE MATERIAIS – 2 FÔRMAS")
+    lm = lista_materiais(pecas, "Painel de laje", compras("painel", "nicho"),
+                         "LISTA DE MATERIAIS – 1 FÔRMA" if gf.FORMAS_PAINEL == 1 else
+                         f"LISTA DE MATERIAIS – {gf.FORMAS_PAINEL} FÔRMAS")
 
     jun = fl.vista(dz.detalhe_junta(P, 5), "JUNTA ENTRE PAINÉIS", "1:5")
     soldas = quadro_soldas([

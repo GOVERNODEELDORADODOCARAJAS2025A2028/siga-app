@@ -65,6 +65,12 @@ PAINEL = dict(
 )
 BASE_LAJ = dict(margem_x=90, margem_y=100)   # quanto o fundo passa do concreto
 
+# Ponte de vão único de 10 m: quantidades de elementos e de fôrmas
+N_LONGARINAS = 4          # 4 linhas de longarina a cada 1,20 m
+N_PAINEIS = 8             # 10,00 m de tabuleiro em módulos de 1,25 m
+FORMAS_PLACA = 3          # 24 placas de saia em 8 ciclos de concretagem
+FORMAS_PAINEL = 1         # 8 painéis em 8 ciclos de concretagem
+
 # --------------------------------------------------------------------------
 # CHAPA E DOBRA  (PROVISÓRIO: trocar pela tabela do fornecedor)
 #   ri = raio interno resultante (mm)   k = fator K   v = abertura do V da matriz (mm)
@@ -98,20 +104,17 @@ def _volume_painel():
     return bruto - 8 * nicho - 2 * (P["comprimento"] / 1000) * rebaixo
 
 
-# Peças de concreto da ponte (2 vãos de 10 m, largura 4,50 m, cabeceiras de 4,76 m).
+# Peças de concreto da ponte (vão único de 10 m, largura 4,50 m, cabeceiras de 4,76 m).
 # (código, peça, dimensões em m, volume unitário em m3, quantidade, forma)
 KIT = [
-    ("P-01", "Longarina", "0,30 x 0,90 x 10,00", 0.30 * 0.90 * 10.00, 8, "F-LON"),
+    ("P-01", "Longarina", "0,30 x 0,90 x 10,00", 0.30 * 0.90 * 10.00, N_LONGARINAS, "F-LON"),
     ("P-02", "Painel de laje de espessura total, com 8 nichos", "4,50 x 1,23 x 0,20",
-     _volume_painel(), 16, "F-LAJ"),
+     _volume_painel(), N_PAINEIS, "F-LAJ"),
     ("P-03", "Guarda-rodas, módulo de 2,50 m (seção a definir; área de referência 0,20 m²)",
-     "2,50 de comprimento", 0.20 * 2.50, 16, "F-GUA"),
-    ("P-04", "Travessa das cabeceiras e do apoio central", "4,64 x 0,90 x 0,60",
-     4.64 * 0.90 * 0.60, 3, "F-TRA"),
+     "2,50 de comprimento", 0.20 * 2.50, 8, "F-GUA"),
+    ("P-04", "Travessa das cabeceiras", "4,64 x 0,90 x 0,60", 4.64 * 0.90 * 0.60, 2, "F-TRA"),
     ("P-05", "Pilar de cabeceira com ranhura", "0,30 x 0,70 x 4,10",
      0.30 * 0.70 * 4.10 - 1.5 * 0.18 * 0.08 * 3.00, 6, "F-PIL"),
-    ("P-06", "Pilar do apoio central (comprimento a definir; valores por metro)",
-     "0,30 x 0,70 x 1,00", 0.30 * 0.70 * 1.00, 3, "F-PIL"),
     ("P-07", "Placa de saia", "2,00 x 0,50 x 0,15", 2.00 * 0.50 * 0.15, 24, "F-PLA"),
     ("P-08", "Cortina, 2 painéis por cabeceira", "2,32 x 1,16 x 0,25",
      2.32 * 1.16 * 0.25, 4, "F-COR"),
@@ -357,7 +360,7 @@ def pecas_forma_longarina():
 
 def pecas_forma_placa():
     L, H, e = PLACA["comprimento"], PLACA["altura"], PLACA["espessura"]
-    n_formas = 3
+    n_formas = FORMAS_PLACA
     pecas = []
 
     # F-PLA-01 bandeja de fundo: alma 2200 x 700, abas 63 para baixo
@@ -431,7 +434,7 @@ def pecas_forma_laje():
         "a régua porta-insertos precisa de furo no trilho longo"
     furos_ponta_y = (150, 615, 1080)
     furos_junta = (163, 488, 738, 1063)                   # ligação entre módulos
-    n_formas = 2
+    n_formas = FORMAS_PAINEL
     pecas = []
 
     def local(X, Y):
@@ -784,24 +787,25 @@ def lista_de_compras():
         ("Barra roscada 5/8\" (16 mm) x 600 mm, com duas porcas e duas arruelas (tirante "
          "superior da fôrma da longarina)", 4 * n_lon_mod, "jogo"),
         ("Parafuso sextavado M16 x 40, classe 8.8, com porca e arruela, zincado (fôrma da "
-         "placa de saia, 16 por fôrma)", 16 * 3, "jogo"),
+         "placa de saia, 16 por fôrma)", 16 * FORMAS_PLACA, "jogo"),
         ("Tubo-fôrma de aço ou PVC rígido, diâmetro 50 mm x 150 mm, com tampa e parafuso M12 "
-         "(furos de içamento e dreno da placa)", 3 * 3, "un"),
+         "(furos de içamento e dreno da placa)", 3 * FORMAS_PLACA, "un"),
         ("Parafuso sextavado M16 x 40, classe 8.8, com porca e arruela, zincado (fôrma do "
-         f"painel, {n_paraf_painel} por fôrma)", n_paraf_painel * 2, "jogo"),
+         f"painel, {n_paraf_painel} por fôrma)", n_paraf_painel * FORMAS_PAINEL, "jogo"),
         ("Barra roscada M12 x 250 mm com porca e arruela (fixação da fôrma do nicho)",
-         8 * 2, "jogo"),
-        ("Porca M12 para solda sob o fundo da fôrma do painel", 8 * 2, "un"),
-        ("Inserto roscado M16 de nivelamento, incorporado ao painel (8 por painel, 16 painéis)",
-         8 * 16, "un"),
+         8 * FORMAS_PAINEL, "jogo"),
+        ("Porca M12 para solda sob o fundo da fôrma do painel", 8 * FORMAS_PAINEL, "un"),
+        ("Inserto roscado M16 de nivelamento, incorporado ao painel (8 por painel, "
+         f"{N_PAINEIS} painéis)", 8 * N_PAINEIS, "un"),
         ("Inserto de içamento conforme especificação do projeto estrutural (4 por painel, "
-         "16 painéis)", 4 * 16, "un"),
+         f"{N_PAINEIS} painéis)", 4 * N_PAINEIS, "un"),
         ("Perfil triangular de PVC rígido para chanfro, 20 x 20 mm (arestas inferiores da "
          "longarina)", 2 * VIGA["comprimento"] / 1000, "m"),
         ("Perfil triangular de PVC rígido para chanfro, 20 x 20 mm (arestas da face aparente da "
-         "placa, 3 fôrmas)", 3 * 2 * (PLACA["comprimento"] + PLACA["altura"]) / 1000, "m"),
+         f"placa, {FORMAS_PLACA} fôrmas)",
+         FORMAS_PLACA * 2 * (PLACA["comprimento"] + PLACA["altura"]) / 1000, "m"),
         ("Perfil triangular de PVC rígido para chanfro, 15 x 15 mm (arestas inferiores e "
-         "superiores das bordas do painel)", round(2 * 2 * 2 * (PAINEL["comprimento"]
+         "superiores das bordas do painel)", round(FORMAS_PAINEL * 2 * 2 * (PAINEL["comprimento"]
                                                          + PAINEL["largura"]) / 1000, 1), "m"),
         ("Gaxeta de espuma para a base da fôrma do nicho", 1, "conforme consumo"),
         ("Desmoldante para fôrma metálica", 1, "conforme consumo"),

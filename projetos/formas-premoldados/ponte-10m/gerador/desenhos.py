@@ -344,8 +344,9 @@ class Dwg:
 # B1: corte longitudinal pelo eixo da ponte
 # --------------------------------------------------------------------------
 def corte_longitudinal(escala=None, term="traco"):
-    d = Dwg(-5200, 25350, -4600, 7200, 380, escala, term)
-    L = 20150
+    """Corte longitudinal da ponte de vão único: longarinas de 10,00 m entre cabeceiras."""
+    L = 10100                         # entre faces internas das cortinas
+    d = Dwg(-5200, L + 5200, -3100, 7200, 380, escala, term)
 
     def gx(u, lado):
         return u if lado == 0 else L - u
@@ -355,14 +356,14 @@ def corte_longitudinal(escala=None, term="traco"):
 
     perfil = [(-3400, 4760), (-250, 4760), (-250, 3000), (125, 3000), (125, 0), (1200, 0),
               (4200, -1800), (L - 4200, -1800), (L - 1200, 0), (L - 125, 0), (L - 125, 3000),
-              (L + 250, 3000), (L + 250, 4760), (L + 3400, 4760), (L + 3400, -4600),
-              (-3400, -4600)]
+              (L + 250, 3000), (L + 250, 4760), (L + 3400, 4760), (L + 3400, -3000),
+              (-3400, -3000)]
     d.poly(perfil, "soil")
     zw = -700
     xw = 1200 + 3000 * (-zw / 1800)
     d.poly([(xw, zw), (L - xw, zw), (L - 4200, -1800), (4200, -1800)], "water")
     d.line(xw - 600, 2600, L - xw + 600, 2600, "na")
-    d.text(11000, 2700, "NA MÁX. A DEFINIR (ESTUDO HIDROLÓGICO)", anchor="start", cls="note", k=0.8)
+    d.text(L / 2, 2700, "NA MÁX. A DEFINIR (ESTUDO HIDROLÓGICO)", cls="note", k=0.8)
     for lado in (0, 1):
         for i in range(9):
             u = 1350 + i * 330
@@ -384,31 +385,21 @@ def corte_longitudinal(escala=None, term="traco"):
         r_local(-3250, 4510, -250, 4760, "pm", lado)
         r_local(125, 3600, 375, 3660, "brg", lado)
 
-    xc = L / 2
-    d.rect(xc - 750, -3000, xc + 750, -1900, "cip")
-    for dx in (-550, 250):
-        d.rect(xc + dx, -4500, xc + dx + 300, -3000, "cipd")
-    d.rect(xc - 150, -1900, xc + 150, 3000, "pm2")
-    d.rect(xc - 450, 3000, xc + 450, 3600, "pm")
-    for c in (xc - 225, xc + 225):
-        d.rect(c - 125, 3600, c + 125, 3660, "brg")
-
-    for x1, x2 in ((50, 10050), (10100, 20100)):
-        d.rect(x1, 3660, x2, 4560, "pm2")
-        d.rect(x1, 4560, x2, 4760, "pm")
-        for k in range(1, 8):
-            d.line(x1 + 1250 * k, 4560, x1 + 1250 * k, 4760, "joint")
-    d.rect(50, 4760, 20100, 5560, "pm")
+    d.rect(50, 3660, L - 50, 4560, "pm2")
+    d.rect(50, 4560, L - 50, 4760, "pm")
     for k in range(1, 8):
+        d.line(50 + 1250 * k, 4560, 50 + 1250 * k, 4760, "joint")
+    d.rect(50, 4760, L - 50, 5560, "pm")
+    for k in range(1, 4):
         d.line(50 + 2500 * k, 4760, 50 + 2500 * k, 5560, "joint")
 
     d.text(-2400, 1600, "ATERRO", cls="tag", k=0.8)
     d.text(L + 2400, 1600, "ATERRO", cls="tag", k=0.8)
-    d.text(7000, -1350, "RIO", cls="tag", k=0.8)
+    d.text(L / 2, -1350, "RIO", cls="tag", k=0.8)
 
-    d.dim_h(50, 10050, 6200, "10,00")
-    d.dim_h(10100, 20100, 6200, "10,00")
-    d.dim_h(0, L, 6850, "20,15 (ENTRE FACES DAS CORTINAS)")
+    d.dim_h(50, L - 50, 6200, "10,00 (LONGARINA)")
+    d.dim_h(0, L, 6850, "10,10 (ENTRE FACES DAS CORTINAS)")
+    d.dim_h(550, L - 550, 700, "9,00 (ABERTURA LIVRE ENTRE PILARES)", k=0.85)
     d.dim_v(0, 3000, -3900, "3,00")
     d.dim_v(3000, 3600, -3900, "0,60", k=0.75)
     d.dim_v(3600, 4760, -3900, "1,16", k=0.8)
@@ -416,7 +407,7 @@ def corte_longitudinal(escala=None, term="traco"):
 
     d.callout(1, 3000, 5870, 3000, 5560)
     d.callout(2, 4400, 5870, 4400, 4700)
-    d.callout(3, 6000, 3000, 6000, 3660)
+    d.callout(3, 7000, 3000, 7000, 3660)
     d.callout(4, 1500, 3300, 650, 3300)
     d.callout(5, 1500, 1500, 550, 1500)
     d.callout(6, 1500, 2400, 275, 2400)
@@ -424,10 +415,8 @@ def corte_longitudinal(escala=None, term="traco"):
     d.callout(8, -2400, 3600, -1800, 4600)
     d.callout(9, -900, -2000, -900, -1100)
     d.callout(10, 2700, 3250, 375, 3630)
-    d.callout(11, xc + 1300, 1000, xc + 150, 1000)
-    d.callout(12, xc + 1500, -2500, xc + 750, -2500)
-    d.callout(13, 3300, -300, 2300, -650)
-    return d.svg("Corte longitudinal da ponte de dois vãos de 10 m, em escala", 820, "b1")
+    d.callout(11, 3300, -300, 2300, -650)
+    return d.svg("Corte longitudinal da ponte de vão único de 10 m, em escala", 640, "b1")
 
 
 # --------------------------------------------------------------------------
@@ -519,7 +508,7 @@ def cabeceira_frontal(escala=None, term="traco"):
 
 
 # --------------------------------------------------------------------------
-# B4: planta do pilar central com ranhuras e placas
+# B4: planta do pilar intermediário da cabeceira, com ranhuras e placas
 # --------------------------------------------------------------------------
 def planta_pilar(escala=None, term="traco"):
     d = Dwg(-760, 760, -820, 760, 34, escala, term)
@@ -537,7 +526,8 @@ def planta_pilar(escala=None, term="traco"):
     d.dim_v(-70, 70, 230, "0,14", k=0.7)
     d.dim_h(-75, 75, 620, "0,15", k=0.75, tx=215)
     d.text(0, -760, "FOLGA DE 15 mm EM CADA FACE DA PLACA", cls="note", k=0.85)
-    return d.svg("Planta do pilar central com as duas ranhuras e as placas encaixadas", 380, "b4")
+    return d.svg("Planta do pilar intermediário da cabeceira com as duas ranhuras e as placas "
+                 "encaixadas", 380, "b4")
 
 
 # --------------------------------------------------------------------------

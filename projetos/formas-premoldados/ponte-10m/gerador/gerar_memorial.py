@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Memorial descritivo MD-01 (formato A4) da ponte pré-moldada de dois vãos de 10 m e das fôrmas
+Memorial descritivo MD-01 (formato A4) da ponte pré-moldada de vão único de 10 m e das fôrmas
 metálicas dos elementos pré-moldados.
 
 Gera saida/pranchas/MD-01_memorial_descritivo.pdf. As quantidades, massas e estimativas são
@@ -118,7 +118,7 @@ def main():
     h.append(f"""<div class="capa">
 <div class="t">{fl.esc(ORGAO)}</div>
 <h1>MEMORIAL DESCRITIVO MD-01</h1>
-<div class="s">PONTE EM CONCRETO PRÉ-MOLDADO COM DOIS VÃOS DE 10,00 m E LARGURA DE 4,50 m –
+<div class="s">PONTE EM CONCRETO PRÉ-MOLDADO COM VÃO ÚNICO DE 10,00 m E LARGURA DE 4,50 m –
 ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
 {tab(None, [["LOCAL", fl.LOCAL], ["SITUAÇÃO", fl.SITUACAO], ["REVISÃO", "0 – EMISSÃO INICIAL "
                                                                        "PARA ANÁLISE"],
@@ -128,7 +128,7 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
 
     h.append("<h2>1. Objeto</h2>")
     h.append("<p>Este memorial descreve o anteprojeto de uma ponte em concreto pré-moldado com "
-             "dois vãos de 10,00 m e largura total de 4,50 m e o projeto das fôrmas metálicas, "
+             "vão único de 10,00 m e largura total de 4,50 m e o projeto das fôrmas metálicas, "
              "em chapa de aço cortada a laser e dobrada, destinadas à moldagem dos elementos "
              "pré-moldados da superestrutura e das saias das cabeceiras. Estabelece as "
              "premissas adotadas, a concepção estrutural, os elementos que compõem o sistema, "
@@ -174,19 +174,18 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
 
     h.append("<h2>4. Premissas e dados de entrada</h2>")
     h.append(tab(["PARÂMETRO", "VALOR ADOTADO", "ORIGEM E SITUAÇÃO"], [
-        ["Vãos", "2 × 10,00 m; longarina de 10,00 m e vão teórico de 9,60 m",
+        ["Vão", "Vão único; longarina de 10,00 m e vão teórico de 9,60 m",
          "Definição do contratante"],
-        ["Comprimento entre faces das cortinas", "20,15 m", "Calculado"],
+        ["Comprimento entre faces das cortinas", "10,10 m", "Calculado"],
+        ["Abertura livre", "9,00 m entre as faces dos pilares das cabeceiras, sem apoio no "
+                           "leito do curso d'água", "A verificar no estudo hidrológico"],
         ["Largura", "4,50 m, com pista de 3,70 m entre guarda-rodas (faixa única, tráfego "
                     "alternado)", "Definição do contratante"],
         ["Altura útil das cabeceiras", "4,76 m: 6 fiadas de placas (3,00 m), travessa (0,60 m) "
                                        "e cortina (1,16 m)", "Ajustada ao módulo das placas"],
-        ["Apoios", "3 pilares por apoio, nas duas cabeceiras e no apoio central",
-         "Definição do contratante"],
+        ["Apoios", "Duas cabeceiras, com 3 pilares cada", "Definição do contratante"],
         ["Carga móvel", "TB-450 (ABNT NBR 7188:2024)", "A confirmar pelo responsável técnico"],
         ["Materiais", "Concreto C30; aço CA-50", "A confirmar com a classe de agressividade"],
-        ["Fundação do apoio central", "Bloco sobre estacas moldado no local",
-         "A definir com sondagem"],
         ["Topografia, hidrologia e geotecnia", "Não disponíveis",
          "Condicionantes do projeto executivo"],
     ], larguras=["24%", "46%", "30%"]))
@@ -194,22 +193,24 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
              "pré-dimensionamento. Não constituem dimensionamento estrutural.</p>")
 
     h.append("<h2>5. Concepção estrutural</h2>")
-    h.append("<p><b>Superestrutura.</b> Em cada vão, quatro longarinas pré-moldadas de "
-             "0,30 × 0,90 m, espaçadas de 1,20 m, simplesmente apoiadas em aparelhos de apoio "
-             "de elastômero fretado sobre as travessas. Tabuleiro em painéis pré-moldados de "
+    h.append("<p><b>Superestrutura.</b> Quatro longarinas pré-moldadas de 0,30 × 0,90 × "
+             "10,00 m, espaçadas de 1,20 m, simplesmente apoiadas em oito aparelhos de apoio "
+             "de elastômero fretado sobre as travessas das cabeceiras. Tabuleiro em oito painéis "
+             "pré-moldados de "
              "espessura total de 0,20 m, com 4,50 m de comprimento e 1,23 m de largura em "
              "módulo de 1,25 m, ligados às longarinas por nichos preenchidos com graute e "
              "ligados entre si por juntas fêmea-fêmea grauteadas. Guarda-rodas pré-moldados em "
-             "módulos de 2,50 m. Transversinas de apoio moldadas no local, duas por vão, da ordem de "
-             "0,6 m³ cada.</p>")
-    h.append("<p><b>Mesoestrutura.</b> Travessas de 4,64 × 0,90 × 0,60 m sobre três pilares por "
-             "apoio. Nas cabeceiras, os pilares têm seção de 0,30 × 0,70 m, com a maior dimensão "
+             "módulos de 2,50 m. Transversinas de apoio moldadas no local, uma em cada "
+             "extremidade, da ordem de 0,6 m³ cada.</p>")
+    h.append("<p><b>Mesoestrutura.</b> Sem apoio intermediário. Em cada cabeceira, travessa "
+             "de 4,64 × 0,90 × 0,60 m sobre três pilares de seção 0,30 × 0,70 m, com a maior "
+             "dimensão "
              "no sentido do empuxo, e ranhuras que recebem placas de saia de 2,00 × 0,50 × "
              "0,15 m; o conjunto forma a contenção do aterro. Cortinas e lajes de transição "
              "completam as cabeceiras.</p>")
     h.append("<p><b>Infraestrutura.</b> Nas cabeceiras, sapatas corridas segmentadas, com cálice "
              "para embutimento dos pilares e calcanhar sob o aterro, com dimensões dependentes "
-             "da sondagem. No apoio central, bloco sobre estacas moldado no local. A ligação "
+             "da sondagem. Não há fundação no leito do curso d'água. A ligação "
              "pilar-sapata por cálice segue a ABNT NBR 9062:2017; o comprimento de embutimento "
              "de partida, de 1,10 m, deve ser verificado no projeto estrutural.</p>")
 
@@ -235,13 +236,13 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
              "por viga).</li>"
              "<li>As alças de içamento das longarinas ficam dentro de um nicho ou são cortadas "
              "após a montagem, para não interferir com os painéis.</li>"
-             "<li>Juntas de 20 mm entre painéis; junta de dilatação da ordem de 70 mm sobre o "
-             "apoio central e de 60 mm entre o tabuleiro e cada cortina.</li>"
+             "<li>Juntas de 20 mm entre painéis e junta da ordem de 50 mm entre o tabuleiro e "
+             "cada cortina.</li>"
              "<li>Berço de graute da ordem de 20 mm entre o topo da longarina e o painel, contido "
              "por tiras de espuma nas bordas da viga; aparelho de apoio com calço da ordem de "
              "40 mm.</li>"
-             "<li>Graute dos nichos, das juntas e dos cálices, transversinas de apoio, bloco e "
-             "estacas do apoio central e revestimento da pista executados no local.</li></ol>")
+             "<li>Graute dos nichos, das juntas e dos cálices, transversinas de apoio e "
+             "revestimento da pista executados no local.</li></ol>")
 
     h.append("<h2>7. Verificações preliminares</h2>")
     h.append("<p>Os valores a seguir são estimativas expeditas, em valores característicos, "
@@ -253,7 +254,8 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
              f"e altura de 4,76 m:</p>")
     h.append(f"<div class='eq'>E = ½·Ka·γ·H² + Ka·q·H = {num(es['E'])} kN/m &nbsp;&nbsp;&nbsp; "
              f"M = Ka·γ·H³/6 + Ka·q·H²/2 = {num(es['M'])} kN·m/m</div>")
-    h.append(f"<p>Para o pilar central, com faixa de influência de {num(es['faixa'], 2)} m, o "
+    h.append(f"<p>Para o pilar intermediário de cada cabeceira, com faixa de influência de "
+             f"{num(es['faixa'], 2)} m, o "
              f"momento na base resulta da ordem de {num(es['Mp'], 0)} kN·m (característico), "
              f"considerado o pilar em balanço sem travamento pelo tabuleiro. Com γf = 1,4, "
              f"Md = {num(es['Md'], 0)} kN·m; na seção de 0,30 × 0,70 m, com altura útil de 0,64 m, a armadura "
@@ -306,9 +308,11 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
                                     "5,00 m com 2 módulos); larguras de 250 mm a 360 mm; altura "
                                     "até 1000 mm", n_marcas["Longarina"], n_pecas["Longarina"],
          num(aco["Longarina"], 0)],
-        ["F-PLA", "Placa de saia P-07", "3 fôrmas; 24 placas em 8 ciclos de concretagem",
+        ["F-PLA", "Placa de saia P-07", f"{gf.FORMAS_PLACA} fôrmas; 24 placas em "
+                                        f"{-(-24 // gf.FORMAS_PLACA)} ciclos de concretagem",
          n_marcas["Placa de saia"], n_pecas["Placa de saia"], num(aco["Placa de saia"], 0)],
-        ["F-LAJ", "Painel de laje P-02", "2 fôrmas; fundo em 2 módulos intercambiáveis; chave de "
+        ["F-LAJ", "Painel de laje P-02", f"{gf.FORMAS_PAINEL} fôrma; {gf.N_PAINEIS} painéis; "
+                                         "fundo em 2 módulos intercambiáveis; chave de "
                                          "cisalhamento nas bordas; 8 nichos tronco-piramidais",
          n_marcas["Painel de laje"], n_pecas["Painel de laje"], num(aco["Painel de laje"], 0)],
     ]
@@ -361,15 +365,15 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
              "<li>Verificação estrutural das fôrmas conforme ABNT NBR 15696:2009, sob "
              "responsabilidade do responsável técnico.</li></ol>")
 
-    h.append("<p>Ciclos de produção: com um jogo da fôrma da longarina, uma viga por ciclo "
-             "(8 ciclos); com 3 fôrmas de placa, 24 placas em 8 ciclos; com 2 fôrmas de painel, "
-             "16 painéis em 8 ciclos.</p>")
+    h.append(f"<p>Ciclos de produção: com um jogo da fôrma da longarina, uma viga por ciclo "
+             f"({gf.N_LONGARINAS} ciclos); com {gf.FORMAS_PLACA} fôrmas de placa, 24 placas em "
+             f"{-(-24 // gf.FORMAS_PLACA)} ciclos; com {gf.FORMAS_PAINEL} fôrma de painel, "
+             f"{gf.N_PAINEIS} painéis em {-(-gf.N_PAINEIS // gf.FORMAS_PAINEL)} ciclos.</p>")
 
     h.append("<h2>9. Sequência executiva</h2>")
     h.append("<ol>"
              "<li>Locação, sondagens, estudos topográfico e hidrológico e projeto executivo.</li>"
-             "<li>Fundação do apoio central e sapatas das cabeceiras; embutimento dos pilares nos "
-             "cálices.</li>"
+             "<li>Sapatas das cabeceiras; embutimento dos pilares nos cálices.</li>"
              "<li>Travessas e aparelhos de apoio.</li>"
              "<li>Montagem das longarinas e dos painéis de laje; grauteamento dos nichos e das "
              "juntas.</li>"

@@ -1,4 +1,4 @@
-# Ponte em concreto pré-moldado, dois vãos de 10,00 m: anteprojeto e fôrmas metálicas
+# Ponte em concreto pré-moldado, vão único de 10,00 m: anteprojeto e fôrmas metálicas
 
 **Situação: anteprojeto, não liberado para fabricação.** As dimensões dos elementos de concreto
 resultam de pré-dimensionamento. A fabricação das fôrmas depende das condicionantes do
@@ -21,11 +21,12 @@ demais de 10 mm, legenda de 180 mm) e a ABNT NBR 16861:2020 (linhas e escrita).
 
 | Parâmetro | Valor | Situação |
 |---|---|---|
-| Vãos | 2 × 10,00 m (longarina de 10,00 m, vão teórico de 9,60 m) | Definição do contratante |
-| Comprimento entre faces das cortinas | 20,15 m | Calculado |
+| Vão | Vão único: longarina de 10,00 m, vão teórico de 9,60 m | Definição do contratante |
+| Comprimento entre faces das cortinas | 10,10 m | Calculado |
+| Abertura livre | 9,00 m entre as faces dos pilares, sem apoio no leito do rio | A verificar no estudo hidrológico |
 | Largura | 4,50 m; pista de 3,70 m entre guarda-rodas | Definição do contratante |
 | Altura útil das cabeceiras | 4,76 m (placas 3,00 m, travessa 0,60 m, cortina 1,16 m) | Ajustada ao módulo das placas |
-| Apoios | 3 pilares por apoio | Definição do contratante |
+| Apoios | 2 cabeceiras com 3 pilares cada | Definição do contratante |
 | Carga móvel | TB-450 (ABNT NBR 7188:2024) | A confirmar |
 | Materiais | C30 e CA-50 | A confirmar |
 
@@ -35,7 +36,7 @@ demais de 10 mm, legenda de 180 mm) e a ABNT NBR 16861:2020 (linhas e escrita).
 |---|---|---|---|---|---|
 | F-LON | Longarina P-01, 300 × 900 × 10000 mm | 1 jogo de 4 módulos de 2500 mm | 8 | 142 | 1.778 kg |
 | F-PLA | Placa de saia P-07, 2000 × 500 × 150 mm | 3 fôrmas | 4 | 27 | 401 kg |
-| F-LAJ | Painel de laje P-02, 4500 × 1230 × 200 mm | 2 fôrmas | 11 | 140 | 1.445 kg |
+| F-LAJ | Painel de laje P-02, 4500 × 1230 × 200 mm | 1 fôrma (8 painéis em 8 ciclos) | 11 | 70 | 723 kg |
 
 Fôrmas ainda não detalhadas: pilar (F-PIL), travessa (F-TRA), cortina (F-COR), sapata (F-SAP),
 guarda-rodas (F-GUA) e laje de transição (F-LTR), dependentes do projeto estrutural e da
