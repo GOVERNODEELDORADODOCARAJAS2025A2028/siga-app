@@ -41,7 +41,11 @@ td.n{text-align:right;white-space:nowrap}
 td.c{text-align:center}
 caption{caption-side:top;text-align:left;font-weight:700;font-size:9pt;padding:0 0 1mm}
 .capa{border:.5mm solid #000;padding:5mm 6mm;margin:0 0 6mm}
-.capa .t{font-size:9pt;letter-spacing:.06em;margin:0 0 1mm}
+.capa .ent{display:flex;align-items:center;gap:4mm;border-bottom:.3mm solid #000;
+  padding:0 0 3mm;margin:0 0 4mm;text-align:left}
+.capa .ent img{height:17mm;width:auto;flex:0 0 auto}
+.capa .ent .t{font-size:10.5pt;font-weight:700;letter-spacing:.02em;margin:0 0 .8mm}
+.capa .ent .e{font-size:8.5pt;line-height:1.3}
 .capa .s{font-size:10.5pt;font-weight:700;margin:0 0 3mm;text-align:left}
 .capa table td{font-size:9pt}
 .eq{font-family:"Liberation Serif","Times New Roman",serif;font-size:10.5pt;text-align:center;
@@ -50,7 +54,8 @@ caption{caption-side:top;text-align:left;font-weight:700;font-size:9pt;padding:0
 """
 
 ORGAO = fl.PROPRIETARIO
-CABECALHO = (f"{ORGAO} &nbsp;|&nbsp; MEMORIAL DESCRITIVO MD-01 &nbsp;|&nbsp; REVISÃO 0 "
+REVISAO, _, REVISAO_TXT = fl.REVISOES[-1]
+CABECALHO = (f"{ORGAO} &nbsp;|&nbsp; MEMORIAL DESCRITIVO MD-01 &nbsp;|&nbsp; REVISÃO {REVISAO} "
              f"&nbsp;|&nbsp; {fl.DATA}")
 
 
@@ -116,14 +121,19 @@ def main():
 
     h = []
     h.append(f"""<div class="capa">
-<div class="t">{fl.esc(ORGAO)}</div>
+<div class="ent"><img src="{fl.LOGO_URI}" alt="Bandeira do Município de Eldorado do Carajás">
+<div><div class="t">{fl.esc(ORGAO)}</div><div class="e">CNPJ {fl.CNPJ}</div>
+<div class="e">{fl.esc(fl.ENDERECO)}</div></div></div>
 <h1>MEMORIAL DESCRITIVO MD-01</h1>
 <div class="s">PONTE EM CONCRETO PRÉ-MOLDADO COM VÃO ÚNICO DE 10,00 m E LARGURA DE 4,50 m –
 ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
-{tab(None, [["LOCAL", fl.LOCAL], ["SITUAÇÃO", fl.SITUACAO], ["REVISÃO", "0 – EMISSÃO INICIAL "
-                                                                       "PARA ANÁLISE"],
-            ["DATA", fl.DATA], ["RESPONSÁVEL TÉCNICO", "A DESIGNAR (CREA E ART A INFORMAR)"]],
-        larguras=["28%", "72%"])}
+{tab(None, [["PROPRIETÁRIO", f"{ORGAO}, CNPJ {fl.CNPJ}"],
+            ["PREFEITO MUNICIPAL", fl.PREFEITO],
+            ["LOCAL DA OBRA", fl.LOCAL], ["SITUAÇÃO", fl.SITUACAO],
+            ["REVISÃO", f"{REVISAO} – {REVISAO_TXT}"], ["DATA", fl.DATA],
+            ["RESPONSÁVEL TÉCNICO PELO PROJETO", "A DESIGNAR (CREA E ART A INFORMAR)"],
+            ["ANÁLISE TÉCNICA", f"{fl.ANALISTA} – {fl.ANALISTA_REGISTRO}"]],
+        larguras=["32%", "68%"])}
 </div>""")
 
     h.append("<h2>1. Objeto</h2>")
@@ -165,6 +175,8 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
         ["ABNT NBR 16861:2020", "Desenho técnico: requisitos para representação de linhas e "
                                 "escrita"],
         ["AWS D1.1", "Soldagem estrutural de aço (procedimento de referência)"],
+        ["Lei nº 5.194/1966", "Exercício das profissões de engenheiro e engenheiro-agrônomo "
+                              "(arts. 13 e 14)"],
         ["Lei nº 6.496/1977", "Anotação de Responsabilidade Técnica (ART)"],
         ["Lei nº 14.133/2021", "Licitações e contratos administrativos (arts. 46, § 1º, 124 e "
                                "125)"],
@@ -415,11 +427,30 @@ ANTEPROJETO E FÔRMAS METÁLICAS DOS ELEMENTOS PRÉ-MOLDADOS</div>
              "gestor competente, para a obra que interfere no curso d'água (Lei nº 9.433/1997, "
              "art. 12, V).</li></ol>")
 
-    h.append("<h2>11. Responsabilidade técnica</h2>")
+    h.append("<h2>11. Responsabilidade técnica e análise</h2>")
     h.append("<p>Este memorial e as pranchas que o acompanham constituem anteprojeto elaborado a "
-             "partir das premissas informadas pelo contratante. Não substituem o projeto "
-             "executivo, que deve ser elaborado e assinado por profissional legalmente "
-             "habilitado, com a respectiva Anotação de Responsabilidade Técnica.</p>")
+             "partir das premissas informadas pelo contratante. Os estudos, plantas e projetos "
+             "de engenharia só têm valor jurídico quando seus autores forem profissionais "
+             "habilitados, e os trabalhos gráficos devem conter a assinatura, o título "
+             "profissional e o número do registro do signatário (Lei nº 5.194/1966, arts. 13 e "
+             "14). O anteprojeto não substitui o projeto executivo, que deve ser elaborado e "
+             "assinado por profissional legalmente habilitado, com a respectiva Anotação de "
+             "Responsabilidade Técnica (Lei nº 6.496/1977, art. 1º).</p>")
+    h.append(f"<p>O anteprojeto é submetido à análise técnica do Eng. {fl.ANALISTA_NOME}, "
+             f"CREA-PA nº&nbsp;{fl.ANALISTA_CREA}, servidor do Município, matrícula "
+             f"nº&nbsp;{fl.ANALISTA_MATRICULA}. A análise "
+             f"técnica não transfere a autoria nem a responsabilidade técnica pelo projeto "
+             f"executivo e é registrada no quadro a seguir e no campo próprio da legenda das "
+             f"pranchas.</p>")
+    vazio = fl.Bruto("<div style='height:22mm'></div>")
+    h.append(tab(None, [
+        ["PROFISSIONAL", fl.ANALISTA],
+        ["REGISTRO", fl.ANALISTA_REGISTRO],
+        ["DOCUMENTOS ANALISADOS", f"AG-01, FM-01 A FM-23 E MD-01, REVISÃO {REVISAO}"],
+        ["PARECER E OBSERVAÇÕES", vazio],
+        ["DATA", fl.Bruto("<div style='height:7mm'></div>")],
+        ["ASSINATURA", fl.Bruto("<div style='height:14mm'></div>")],
+    ], titulo="REGISTRO DA ANÁLISE TÉCNICA", larguras=["32%", "68%"]))
 
     html = ("<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'>"
             "<title>Memorial descritivo MD-01</title><style>" + CSS + "</style></head><body>"

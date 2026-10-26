@@ -23,6 +23,7 @@ import gerar_formas as gf                 # noqa: E402
 PASTA = os.path.join(gf.SAIDA, "pranchas")
 QW, QH = 390, 277                 # área útil dentro do quadro (A3)
 RX, RY = QW - fl.LEG_W, QH - fl.LEG_H - fl.REV_H   # canto da área reservada à legenda
+H_DIR = RY - 6                    # altura dos blocos à direita, de y = 4 até 2 mm da legenda
 
 FORMAS = [
     ("Longarina", "F-LON", "FÔRMA DA LONGARINA", "LONGARINA P-01, 300 × 900 × 10000",
@@ -284,7 +285,7 @@ def folha_indice(doc, pecas, indice):
                         titulo="ESPECIFICAÇÃO DE MATERIAIS", larguras=["26%", "74%"])
     conteudo = (fl.bloco(4, 4, 200, 269, f'<div class="pilha">{tab_ind}'
                          f'{fl.notas("NOTAS GERAIS", NOTAS_GERAIS)}</div>')
-                + fl.bloco(210, 4, 176, 206, f'<div class="pilha">{tab_mat}{convencoes()}'
+                + fl.bloco(210, 4, 176, H_DIR, f'<div class="pilha">{tab_mat}{convencoes()}'
                            f'{tab_res}</div>'))
     doc.folha("ÍNDICE, NOTAS GERAIS E ESPECIFICAÇÕES", "SEM ESCALA", conteudo)
 
@@ -356,7 +357,7 @@ def folha_parametros(doc, pecas):
                         classes=["c", "c", "n", "n", "n", "n", "n"])
     conteudo = (fl.bloco(4, 4, 200, 269, f'<div class="pilha">{tab_par}{expr}{equip}{tab_adeq}'
                          f'{obs_adeq}</div>')
-                + fl.bloco(210, 4, 176, 206, f'<div class="pilha">{tab_esf}</div>'))
+                + fl.bloco(210, 4, 176, H_DIR, f'<div class="pilha">{tab_esf}</div>'))
     doc.folha("PARÂMETROS DE CORTE E DOBRA E ESFORÇOS DE DOBRA", "SEM ESCALA", conteudo)
 
 
@@ -495,7 +496,7 @@ def folha_conjunto_painel(doc, pecas):
     conteudo = (fl.bloco(4, 4, 280, 130, pla)
                 + fl.bloco(290, 4, 96, 80, leg)
                 + fl.bloco(4, 140, 200, 70, cor)
-                + fl.bloco(210, 140, 176, 70, notas_p))
+                + fl.bloco(210, 140, 176, RY - 142, notas_p))
     doc.folha("FÔRMA DO PAINEL DE LAJE – CONJUNTO", "INDICADAS", conteudo)
     lm = lista_materiais(pecas, "Painel de laje", compras("painel", "nicho"),
                          "LISTA DE MATERIAIS – 1 FÔRMA" if gf.FORMAS_PAINEL == 1 else
@@ -538,7 +539,7 @@ def folha_conjunto_painel(doc, pecas):
         "Sobre o tabuleiro: manta impermeabilizante e revestimento asfáltico de 50 mm.",
     ])
     conteudo = (fl.bloco(4, 4, 200, 102, jun)
-                + fl.bloco(210, 4, 176, 206, f'<div class="pilha">{lm}{soldas}</div>')
+                + fl.bloco(210, 4, 176, H_DIR, f'<div class="pilha">{lm}{soldas}</div>')
                 + fl.bloco(4, 108, 202, 165, f'<div class="pilha">{mont}{obs}</div>'))
     doc.folha("FÔRMA DO PAINEL DE LAJE – MONTAGEM, SOLDAS E JUNTA", "INDICADA", conteudo)
 
@@ -568,7 +569,7 @@ def folha_listas(doc, pecas):
                          titulo="ITENS COMERCIAIS E MATERIAIS DE CONSUMO",
                          classes=["", "c", "c"], larguras=["76%", "12%", "12%"])
     conteudo = (fl.bloco(4, 4, 200, 269, tab)
-                + fl.bloco(210, 4, 176, 206, f'<div class="pilha">{tab_arq}</div>'))
+                + fl.bloco(210, 4, 176, H_DIR, f'<div class="pilha">{tab_arq}</div>'))
     doc.folha("LISTA GERAL DE CORTE E ARQUIVOS DIGITAIS", "SEM ESCALA", conteudo)
     doc.folha("ITENS COMERCIAIS E MATERIAIS DE CONSUMO", "SEM ESCALA",
               fl.bloco(4, 4, 200, 269, tab_comp))

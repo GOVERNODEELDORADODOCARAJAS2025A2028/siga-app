@@ -27,6 +27,13 @@ confirmados.
   informais (setas, "≈", separadores) no lugar de texto.
 - Antes de entregar, rodar a verificação de sobreposição (`verifica_folhas.js`, chamada pelos
   geradores) e conferir as folhas renderizadas em imagem.
+- Legenda das pranchas e capa do memorial com a bandeira do Município (`logo_eldorado.png`,
+  extraída do ícone do SIGA; substituir pelo brasão oficial quando fornecido), os dados da
+  Prefeitura (CNPJ e endereço), o Prefeito Municipal, o responsável técnico pelo projeto (a
+  designar) e a análise técnica do Eng. Jean Carlos da Mota Sarcedo, com campo de assinatura.
+  Os dados ficam em `folhas.py`. CPF não é impresso: a Lei nº 5.194/1966, art. 14, exige
+  assinatura, título e número do registro, e a LGPD (art. 6º, III) limita os dados ao
+  necessário. O analista não figura como autor nem como responsável técnico.
 - Página publicada (Artifact) sem nome, brasão ou marca da Prefeitura.
 
 ## Regras técnicas que valem para todas as peças

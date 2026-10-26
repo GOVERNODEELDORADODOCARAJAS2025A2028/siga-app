@@ -10,6 +10,7 @@ ABNT NBR 8196. Os blocos de cada folha são posicionados em milímetros, a parti
 superior esquerdo do quadro.
 """
 
+import base64
 import html
 import os
 import shutil
@@ -19,13 +20,27 @@ FORMATOS = {"A1": (841, 594), "A3": (420, 297), "A4": (210, 297)}
 MARGEM = dict(esq=20, dir=10, sup=10, inf=10)
 
 PROPRIETARIO = "PREFEITURA MUNICIPAL DE ELDORADO DO CARAJÁS – PA"
+CNPJ = "84.139.633/0001-75"
+ENDERECO = ("RUA RIO VERMELHO, ESQUINA COM BELO HORIZONTE, CENTRO, km 100, CEP 68.524-000, "
+            "ELDORADO DO CARAJÁS – PA")
+PREFEITO = "WAGNE COSTA MACHADO"
+ANALISTA_NOME = "Jean Carlos da Mota Sarcedo"
+ANALISTA_CREA, ANALISTA_MATRICULA = "1516847989", "17.120"
+ANALISTA = f"ENG. {ANALISTA_NOME.upper()}"
+ANALISTA_REGISTRO = f"CREA-PA Nº {ANALISTA_CREA} – MATRÍCULA Nº {ANALISTA_MATRICULA}"
 OBRA = "PONTE EM CONCRETO PRÉ-MOLDADO, VÃO ÚNICO DE 10,00 m, LARGURA DE 4,50 m"
 LOCAL = "A DEFINIR"
-SITUACAO = "ANTEPROJETO – NÃO LIBERADO PARA FABRICAÇÃO"
+SITUACAO = "ANTEPROJETO PARA ANÁLISE TÉCNICA – NÃO LIBERADO PARA FABRICAÇÃO"
 DATA = "26/10/2026"
-REVISOES = [("0", DATA, "EMISSÃO INICIAL PARA ANÁLISE")]
+REVISOES = [("0", DATA, "EMISSÃO INICIAL PARA ANÁLISE TÉCNICA")]
 
-LEG_W, LEG_H, REV_H = 180, 50, 13      # legenda e quadro de revisões (mm)
+# bandeira do Município, na legenda e na capa do memorial
+LOGO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo_eldorado.png")
+with open(LOGO, "rb") as _f:
+    LOGO_URI = "data:image/png;base64," + base64.b64encode(_f.read()).decode("ascii")
+
+LEG_W, LEG_H, REV_H = 180, 61, 13      # legenda e quadro de revisões (mm)
+LEG_LINHAS = (13.5, 9, 9.5, 6.5, 6.5, 10)   # alturas das linhas da legenda; a última ocupa o resto
 
 CSS = """
 *{box-sizing:border-box}
@@ -73,19 +88,22 @@ caption{caption-side:top;text-align:left;font-weight:700;font-size:3mm;padding:0
 .tabs table{width:auto}
 .tabs .dados table{width:100%}
 .leg{position:absolute;border-top:.5mm solid #000;border-left:.5mm solid #000;
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
-  grid-template-rows:7mm 9.5mm 10.5mm 7mm 9mm minmax(0,1fr);font-size:2.2mm}
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));font-size:2.2mm}
 .leg>div{border-right:.25mm solid #000;border-bottom:.25mm solid #000;padding:.6mm 1.2mm;
   overflow:hidden}
+.leg>div.logo{background-origin:content-box;background-position:center;
+  background-repeat:no-repeat;background-size:contain;padding:1mm}
 .leg .r{font-size:1.8mm;letter-spacing:.04em;display:block;line-height:1.1;margin-bottom:.3mm}
 .leg .v{font-size:2.5mm;font-weight:700;line-height:1.15;display:block}
+.leg .d{font-size:1.9mm;letter-spacing:.02em;line-height:1.15;display:block}
+.leg .d b{font-size:2.1mm}
 .leg .grande{font-size:3.5mm}
 .leg .num{font-size:6mm;font-weight:700;text-align:center;line-height:1}
 .leg .sit{font-weight:700;font-size:2.8mm;text-align:center;display:flex;align-items:center;
   justify-content:center}
 .rev{position:absolute;border-top:.5mm solid #000;border-left:.5mm solid #000;font-size:2.2mm}
 .rev table td,.rev table th{font-size:2.2mm;padding:.25mm .8mm;border-width:.25mm}
-.rev table{border-left:0;border-top:0}
+.rev table{border-left:0;border-top:0;height:100%}
 .selo{position:absolute;font-weight:700;font-size:3.5mm;letter-spacing:.06em;
   border:.5mm solid #000;padding:1mm 2.5mm}
 
@@ -241,29 +259,40 @@ class Documento:
         total = len(self.folhas)
         qw, qh = self.area()
         x, y = qw - LEG_W, qh - LEG_H
-        c = (f'<div style="grid-column:span 3"><span class="r">PROPRIETÁRIO</span>'
-             f'<span class="v">{esc(PROPRIETARIO)}</span></div>'
+        c = (f'<div class="logo"></div>'
+             f'<div style="grid-column:span 4"><span class="r">PROPRIETÁRIO</span>'
+             f'<span class="v">{esc(PROPRIETARIO)}</span>'
+             f'<span class="d">CNPJ {esc(CNPJ)} – {esc(ENDERECO)}</span>'
+             f'<span class="d"><b>PREFEITO MUNICIPAL: {esc(PREFEITO)}</b></span></div>'
              f'<div style="grid-row:span 2"><span class="r">PRANCHA</span>'
              f'<div class="num">{esc(self.numero(i))}</div>'
              f'<span class="r" style="text-align:center;margin-top:.8mm">FOLHA {i:02d}/'
              f'{total:02d}</span></div>'
-             f'<div style="grid-column:span 3"><span class="r">OBRA</span>'
+             f'<div style="grid-column:span 5"><span class="r">OBRA</span>'
              f'<span class="v">{esc(OBRA)}</span><span class="r" style="margin-top:.4mm">'
              f'LOCAL: {esc(LOCAL)}</span></div>'
-             f'<div style="grid-column:span 4"><span class="r">{esc(self.assunto)}</span>'
+             f'<div style="grid-column:span 6"><span class="r">{esc(self.assunto)}</span>'
              f'<span class="v grande">{esc(titulo)}</span></div>'
-             f'<div><span class="r">ESCALA</span><span class="v">{esc(escalas)}</span></div>'
-             f'<div><span class="r">UNIDADE</span><span class="v">{esc(self.unidade)}</span>'
-             f'</div>'
+             f'<div style="grid-column:span 2"><span class="r">ESCALA</span>'
+             f'<span class="v">{esc(escalas)}</span></div>'
+             f'<div style="grid-column:span 2"><span class="r">UNIDADE</span>'
+             f'<span class="v">{esc(self.unidade)}</span></div>'
              f'<div><span class="r">DATA</span><span class="v">{esc(DATA)}</span></div>'
              f'<div><span class="r">FORMATO</span><span class="v">{self.formato}</span></div>'
-             f'<div style="grid-column:span 2"><span class="r">RESPONSÁVEL TÉCNICO</span>'
-             f'<span class="v">&nbsp;</span></div>'
-             f'<div><span class="r">CREA</span><span class="v">&nbsp;</span></div>'
-             f'<div><span class="r">ART</span><span class="v">&nbsp;</span></div>'
-             f'<div class="sit" style="grid-column:span 4">{esc(SITUACAO)}</div>')
-        leg = (f'<div class="leg" style="left:{x}mm;top:{y}mm;width:{LEG_W}mm;height:{LEG_H}mm">'
-               f'{c}</div>')
+             f'<div style="grid-column:span 2"><span class="r">RESPONSÁVEL TÉCNICO PELO PROJETO'
+             f'</span><span class="v">A DESIGNAR</span></div>'
+             f'<div><span class="r">CREA</span></div>'
+             f'<div><span class="r">ART</span></div>'
+             f'<div style="grid-column:span 2"><span class="r">ASSINATURA</span></div>'
+             f'<div style="grid-column:span 4"><span class="r">ANÁLISE TÉCNICA</span>'
+             f'<span class="v">{esc(ANALISTA)}</span>'
+             f'<span class="d">{esc(ANALISTA_REGISTRO)}</span></div>'
+             f'<div style="grid-column:span 2"><span class="r">ASSINATURA E DATA DA ANÁLISE'
+             f'</span></div>'
+             f'<div class="sit" style="grid-column:span 6">{esc(SITUACAO)}</div>')
+        linhas = " ".join(f"{h}mm" for h in LEG_LINHAS) + " minmax(0,1fr)"
+        leg = (f'<div class="leg" style="left:{x}mm;top:{y}mm;width:{LEG_W}mm;height:{LEG_H}mm;'
+               f'grid-template-rows:{linhas}">{c}</div>')
         linhas = "".join(f"<tr><td class='c'>{esc(r)}</td><td class='c'>{esc(d)}</td>"
                          f"<td>{esc(t)}</td></tr>" for r, d, t in REVISOES)
         vazias = max(0, 2 - len(REVISOES))
@@ -277,7 +306,8 @@ class Documento:
     def html(self):
         W, H = FORMATOS[self.formato]
         qw, qh = self.area()
-        css = CSS + f"@page{{size:{W}mm {H}mm;margin:0}}"
+        css = (CSS + f".leg>div.logo{{background-image:url({LOGO_URI})}}"
+               f"@page{{size:{W}mm {H}mm;margin:0}}")
         out = []
         for i, (titulo, escalas, conteudo) in enumerate(self.folhas, 1):
             out.append(f'<section class="folha {self.formato}" style="width:{W}mm;height:{H}mm">'

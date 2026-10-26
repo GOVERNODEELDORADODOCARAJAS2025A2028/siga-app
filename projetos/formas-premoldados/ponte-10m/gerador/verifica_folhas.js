@@ -1,5 +1,6 @@
-// Confere a montagem das folhas: blocos que transbordam, blocos que se sobrepõem e blocos
-// que invadem a legenda ou o quadro de revisões. Uso: node verifica_folhas.js folhas.html
+// Confere a montagem das folhas: blocos que transbordam, blocos que se sobrepõem, blocos que
+// invadem a legenda ou o quadro de revisões e campos da legenda com texto cortado.
+// Uso: node verifica_folhas.js folhas.html
 const path = require('path');
 const { chromium } = require('playwright');
 
@@ -15,6 +16,12 @@ const { chromium } = require('playwright');
       const quadro = folha.querySelector('.quadro').getBoundingClientRect();
       const fixos = [...folha.querySelectorAll('.leg, .rev')].map((e) => e.getBoundingClientRect());
       const blocos = [...folha.querySelectorAll('.bl')];
+      folha.querySelectorAll('.leg > div, .rev').forEach((c, k) => {
+        const dx = (c.scrollWidth - c.clientWidth) / mm;
+        const dy = (c.scrollHeight - c.clientHeight) / mm;
+        if (dx > 0.3 || dy > 0.3)
+          out.push(`folha ${i + 1}, campo ${k + 1} da legenda: transborda ${dx.toFixed(1)} x ${dy.toFixed(1)} mm`);
+      });
       const caixas = blocos.map((b) => b.getBoundingClientRect());
       blocos.forEach((b, k) => {
         const r = caixas[k];

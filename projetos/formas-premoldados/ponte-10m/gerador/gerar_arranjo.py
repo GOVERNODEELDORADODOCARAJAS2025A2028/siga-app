@@ -129,6 +129,7 @@ def main():
     os.makedirs(PASTA, exist_ok=True)
     doc = fl.Documento("A1", "ARRANJO GERAL", "AG", "Arranjo geral da ponte pré-moldada",
                        unidade="m, SALVO INDICAÇÃO")
+    _, qh = doc.area()
     b1 = fl.vista(dz.corte_longitudinal(50), "CORTE LONGITUDINAL PELO EIXO DA PONTE", "1:50")
     b2 = fl.vista(dz.secao_transversal(25), "SEÇÃO TRANSVERSAL DO TABULEIRO SOBRE A TRAVESSA",
                   "1:25")
@@ -140,7 +141,7 @@ def main():
                f'{legenda_numerada("LEGENDA DA CABECEIRA", LEG_B3)}{convencoes()}</div>')
     conteudo = (fl.bloco(4, 6, 420, 226, b1)
                 + fl.bloco(432, 6, 192, 182, b4)
-                + fl.bloco(632, 6, 175, 499, direita)
+                + fl.bloco(632, 6, 175, qh - fl.LEG_H - fl.REV_H - 8, direita)
                 + fl.bloco(4, 240, 262, 182, b2)
                 + fl.bloco(272, 240, 150, 200, b3)
                 + fl.bloco(432, 196, 192, 258, fl.notas("NOTAS GERAIS", NOTAS))

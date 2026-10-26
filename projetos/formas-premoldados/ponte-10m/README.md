@@ -1,8 +1,15 @@
 # Ponte em concreto pré-moldado, vão único de 10,00 m: anteprojeto e fôrmas metálicas
 
-**Situação: anteprojeto, não liberado para fabricação.** As dimensões dos elementos de concreto
-resultam de pré-dimensionamento. A fabricação das fôrmas depende das condicionantes do
-memorial descritivo MD-01, seção 10.
+**Situação: anteprojeto para análise técnica, não liberado para fabricação.** As dimensões dos
+elementos de concreto resultam de pré-dimensionamento. A fabricação das fôrmas depende das
+condicionantes do memorial descritivo MD-01, seção 10.
+
+| Identificação | Dados |
+|---|---|
+| Proprietário | Prefeitura Municipal de Eldorado do Carajás – PA, CNPJ 84.139.633/0001-75; Rua Rio Vermelho, esquina com Belo Horizonte, Centro, km 100, CEP 68.524-000 |
+| Prefeito Municipal | Wagne Costa Machado |
+| Responsável técnico pelo projeto | A designar (CREA e ART a informar) |
+| Análise técnica | Eng. Jean Carlos da Mota Sarcedo, CREA-PA nº 1516847989, matrícula nº 17.120 |
 
 ## 1. Documentos
 
@@ -15,7 +22,10 @@ memorial descritivo MD-01, seção 10.
 | Lista de corte, tabela de dobras, itens comerciais, quadro dos elementos e resumo | `saida/tabelas/` | CSV e TXT |
 
 As pranchas seguem a ABNT NBR 16752:2020 (folhas de desenho: margem esquerda de 20 mm,
-demais de 10 mm, legenda de 180 mm) e a ABNT NBR 16861:2020 (linhas e escrita).
+demais de 10 mm, legenda de 180 mm) e a ABNT NBR 16861:2020 (linhas e escrita). A legenda traz
+a bandeira do Município, os dados do proprietário, o Prefeito Municipal, os campos do
+responsável técnico pelo projeto (nome, CREA, ART e assinatura) e o campo da análise técnica,
+com assinatura e data. O registro da análise consta também do memorial MD-01, seção 11.
 
 ## 2. Configuração adotada
 
@@ -64,6 +74,9 @@ python3 gerar_pranchas.py    # pranchas FM em A3 (Node.js com Playwright)
 python3 gerar_arranjo.py     # prancha AG-01 em A1
 python3 gerar_memorial.py    # memorial MD-01 em A4
 ```
+
+Dados de identificação (proprietário, Prefeito, analista, situação e revisões) no início de
+`gerador/folhas.py`; bandeira do Município em `gerador/logo_eldorado.png`.
 
 Parâmetros no início de `gerador/gerar_formas.py`:
 
