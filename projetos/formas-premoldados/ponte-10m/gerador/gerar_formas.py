@@ -5,9 +5,9 @@ Gerador paramétrico das formas metálicas do kit "Ponte pré-moldada de 10 m".
 
 Gera, para cada peça de chapa das formas:
   saida/dxf/<código>_CORTE.dxf    contorno e furos, sem mais nada (arquivo do plasma)
-  saida/dxf/<código>_DESENHO.dxf  contorno, furos, linhas de dobra e textos (conferência)
+  saida/dxf/<código>_DESENHO.dxf  contorno, furos, linhas de dobra, marcas e textos
   saida/svg/<código>.svg          pré-visualização da planificação
-  saida/tabelas/*.csv             lista de corte, tabela de dobras, compras e resumo
+  saida/tabelas/*.csv             lista de corte, tabela de dobras, compras, kit e resumo
 
 ATENÇÃO
   1. Raio interno de dobra e fator K (tabela DOBRA) são PROVISÓRIOS. Antes de cortar,
@@ -21,6 +21,7 @@ Uso:  python3 gerar_formas.py            (requer: pip install ezdxf)
 import csv
 import math
 import os
+import unicodedata
 from dataclasses import dataclass, field
 
 import ezdxf
@@ -43,27 +44,61 @@ PLACA = dict(
     espessura=150,
 )
 
+# Painel de laje de espessura total. Eixo X ao longo dos 4500 mm (atravessa a ponte),
+# eixo Y ao longo da ponte (1230 mm), Z = 0 na face de baixo (a que apoia nas vigas).
+PAINEL = dict(
+    comprimento=4_500,
+    largura=1_230,           # módulo de 1250 mm com junta de 20 mm entre painéis
+    modulo=1_250,
+    espessura=200,
+    vigas_x=(450, 1650, 2850, 4050),   # eixos das longarinas
+    nichos_y=(302.5, 927.5),           # centros dos nichos: 312,5 + 625 n ao longo da viga
+    nicho_base=(200, 250),             # medidas do nicho na face de baixo (X x Y)
+    nicho_topo=(220, 270),             # medidas do nicho na face de cima (X x Y)
+    icamento_x=(900, 3600),            # insertos de içamento, nas linhas dos nichos
+    nivelamento_y=(120, 1110),         # insertos de nivelamento, sobre cada viga
+    chave=dict(rebaixo=25, aba=20, topo=50, z0=30),  # chave fêmea nas bordas de 4500 mm
+    # esperas do guarda-rodas (amarradas na armadura; não são peça de forma)
+    esperas_guarda_rodas=((200, 307.5), (200, 922.5), (4300, 307.5), (4300, 922.5)),
+)
+BASE_LAJ = dict(margem_x=90, margem_y=100)   # quanto o fundo passa do concreto
+
 # --------------------------------------------------------------------------
 # CHAPA E DOBRA  (PROVISÓRIO: trocar pela tabela do fornecedor)
 #   ri = raio interno resultante (mm)   k = fator K   v = abertura do V da matriz (mm)
 # --------------------------------------------------------------------------
 DOBRA = {
+    3.00: dict(ri=3.5, k=0.42, v=20),
     4.75: dict(ri=6.0, k=0.42, v=40),
     6.30: dict(ri=8.0, k=0.42, v=50),
 }
+ABA_MINIMA_FATOR = 0.7    # aba mínima ~ 0,7 x abertura do V
 DENSIDADE_ACO = 7.85e-6   # kg/mm3
 FURO_M16 = 18.0           # furo para parafuso M16
-FURO_FIXADOR = 14.0       # furo para fixar tubo-forma (parafuso M12)
+FURO_FIXADOR = 14.0       # furo para parafuso M12
 RESISTENCIA_ACO = 450     # MPa, resistência à tração de referência (chapa A36/1020)
 
 CONCRETO_T_M3 = 2.5      # massa específica do concreto armado (NBR 6118)
+
+
+def _volume_painel():
+    P = PAINEL
+    a1 = P["nicho_base"][0] * P["nicho_base"][1] / 1e6
+    a2 = P["nicho_topo"][0] * P["nicho_topo"][1] / 1e6
+    h = P["espessura"] / 1000
+    nicho = h / 3 * (a1 + a2 + math.sqrt(a1 * a2))
+    c = P["chave"]
+    rebaixo = (c["rebaixo"] ** 2 + c["topo"] * c["rebaixo"]) / 1e6   # dois chanfros + topo
+    bruto = P["comprimento"] * P["largura"] * P["espessura"] / 1e9
+    return bruto - 8 * nicho - 2 * (P["comprimento"] / 1000) * rebaixo
+
 
 # Peças de concreto da ponte (2 vãos de 10 m, largura 4,50 m, cabeceiras de 4,76 m).
 # (código, peça, dimensões em m, volume unitário em m3, quantidade, forma)
 KIT = [
     ("P-01", "Longarina", "0,30 x 0,90 x 10,00", 0.30 * 0.90 * 10.00, 8, "F-LON"),
-    ("P-02", "Painel de laje de espessura total, 8 nichos", "4,50 x 1,25 x 0,20",
-     4.50 * 1.25 * 0.20 - 8 * 0.25 * 0.20 * 0.20, 16, "F-LAJ"),
+    ("P-02", "Painel de laje de espessura total, 8 nichos", "4,50 x 1,23 x 0,20",
+     _volume_painel(), 16, "F-LAJ"),
     ("P-03", "Guarda-rodas, módulo (seção a definir, ~0,20 m2)", "2,50 de comprimento",
      0.20 * 2.50, 16, "F-GUA"),
     ("P-04", "Travessa (cabeceiras e apoio central)", "4,64 x 0,90 x 0,60",
@@ -91,28 +126,34 @@ SAIDA = os.path.normpath(os.path.join(AQUI, "..", "saida"))
 # --------------------------------------------------------------------------
 # GEOMETRIA DE DOBRA
 # --------------------------------------------------------------------------
-def dados_dobra(t):
+def dados_dobra(t, ang=90.0):
+    """Recuo externo (OSSB) e comprimento desenvolvido (BA) de uma dobra de 'ang' graus."""
     p = DOBRA[t]
-    ossb = p["ri"] + t                                # recuo externo (90 graus)
-    ba = math.pi / 2 * (p["ri"] + p["k"] * t)          # comprimento desenvolvido da dobra
+    a = math.radians(ang)
+    ossb = (p["ri"] + t) * math.tan(a / 2)
+    ba = a * (p["ri"] + p["k"] * t)
     return ossb, ba
 
 
-def planifica(abas, t):
-    """abas: medidas EXTERNAS dos trechos, em ordem, com dobra de 90 graus entre eles.
+def planifica(abas, t, angulos):
+    """abas: medidas EXTERNAS dos trechos, em ordem; angulos: ângulo de cada dobra.
     Retorna (largura planificada, centros das linhas de dobra, trechos retos)."""
-    ossb, ba = dados_dobra(t)
     n = len(abas)
+    dd = [dados_dobra(t, a) for a in angulos]
     retos = []
     for i, a in enumerate(abas):
-        n_dobras = (1 if i > 0 else 0) + (1 if i < n - 1 else 0)
-        retos.append(a - n_dobras * ossb)
-    largura = sum(retos) + (n - 1) * ba
+        r = a
+        if i > 0:
+            r -= dd[i - 1][0]
+        if i < n - 1:
+            r -= dd[i][0]
+        retos.append(r)
+    largura = sum(retos) + sum(ba for _, ba in dd)
     linhas, y = [], 0.0
     for i in range(n - 1):
         y += retos[i]
-        linhas.append(y + ba / 2)
-        y += ba
+        linhas.append(y + dd[i][1] / 2)
+        y += dd[i][1]
     return largura, linhas, retos
 
 
@@ -133,20 +174,46 @@ class Peca:
     comprimento: float          # medida paralela às linhas de dobra (eixo x)
     abas: list                  # medidas externas dos trechos ao longo de y
     nomes_abas: list = field(default_factory=list)
+    angulos: list = None        # ângulo de cada dobra (padrão 90 graus)
+    giros: list = None          # sentido de cada dobra no perfil: +1 ou -1 (padrão +1)
     furos: list = field(default_factory=list)   # (x, y, diâmetro)
     rasgos: list = field(default_factory=list)  # (x, y1, y2, largura): rasgo alinhado em y
+    contorno: list = None       # contorno próprio (x, y); se vazio, retângulo
+    marcas: list = field(default_factory=list)  # (y, texto): linha de referência, não é corte
     sentido: str = ""
     obs: str = ""
 
     def __post_init__(self):
-        if len(self.abas) > 1:
-            self.largura, self.linhas, self.retos = planifica(self.abas, self.t)
+        if self.contorno:
+            self.largura = max(y for _, y in self.contorno)
+            self.linhas, self.retos, self.angulos, self.giros = [], [self.largura], [], []
+        elif len(self.abas) > 1:
+            self.angulos = self.angulos or [90.0] * (len(self.abas) - 1)
+            self.giros = self.giros or [1] * (len(self.abas) - 1)
+            self.largura, self.linhas, self.retos = planifica(self.abas, self.t, self.angulos)
         else:
             self.largura, self.linhas, self.retos = self.abas[0], [], [self.abas[0]]
+            self.angulos, self.giros = [], []
+
+    def y_na_face(self, i, z):
+        """Posição y, na chapa planificada, do ponto que fica a 'z' mm do lado
+        externo da aba i-1 medido ao longo da aba i (para marcar soldas)."""
+        y = sum(self.retos[:i])
+        for k in range(i):
+            y += dados_dobra(self.t, self.angulos[k])[1]
+        return y + (z - dados_dobra(self.t, self.angulos[i - 1])[0])
+
+    @property
+    def area_bruta(self):
+        if not self.contorno:
+            return self.comprimento * self.largura
+        pts = self.contorno
+        return abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0]
+                       * pts[i][1] for i in range(len(pts)))) / 2
 
     @property
     def peso(self):
-        area = self.comprimento * self.largura
+        area = self.area_bruta
         area -= sum(math.pi * d ** 2 / 4 for _, _, d in self.furos)
         area -= sum((abs(y2 - y1) * w + math.pi * w ** 2 / 4) for _, y1, y2, w in self.rasgos)
         return area * self.t * DENSIDADE_ACO
@@ -165,18 +232,16 @@ def pecas_forma_longarina():
     # posições (ao longo do módulo) dos parafusos de base e dos tirantes:
     # no meio dos vãos entre nervuras, longe das nervuras
     passo_nerv = mod / 8                       # 312,5 mm
-    nervuras_x = [passo_nerv * i for i in range(1, 8)]
     meios = [passo_nerv / 2 + passo_nerv * k for k in range(8)]
     x_fix = [meios[0], meios[3], meios[4], meios[7]]   # 156,25 1093,75 1406,25 2343,75
 
     pecas = []
 
     # F-LON-01 painel lateral: aba superior 75, face 1000, aba inferior 100
-    abas = [75, 1000, 100]
     lat = Peca("F-LON-01", "Painel lateral da longarina", "Longarina", 4.75, 2 * n_mod,
-               mod, abas, ["aba superior", "face (concreto)", "aba inferior (base)"],
-               sentido="as duas abas para tras, lado oposto a face de concreto",
-               obs="Solda de nervuras, cantoneiras e orelhas pelo lado de tras. "
+               mod, [75, 1000, 100], ["aba superior", "face (concreto)", "aba inferior (base)"],
+               sentido="as duas abas para trás, lado oposto à face de concreto",
+               obs="Solda de nervuras, cantoneiras e orelhas pelo lado de trás. "
                    "Face de concreto sem solda e sem respingo.")
     w = lat.largura
     for x in x_fix:                      # furos da base: 60 mm da face de concreto
@@ -193,10 +258,10 @@ def pecas_forma_longarina():
                           "na face de tras do painel."))
 
     # F-LON-03 cantoneira de ligação do painel: 63 (soldada) x 75 (aparafusada)
-    cant = Peca("F-LON-03", "Cantoneira de ligacao do painel", "Longarina", 6.30, 2 * 2 * n_mod,
+    cant = Peca("F-LON-03", "Cantoneira de ligação do painel", "Longarina", 6.30, 2 * 2 * n_mod,
                 math.floor(comp_nerv), [63, 75], ["aba soldada", "aba aparafusada"],
                 sentido="uma dobra de 90 graus",
-                obs="Uma em cada ponta do painel, aba soldada rente a borda; liga modulos "
+                obs="Uma em cada ponta do painel, aba soldada rente à borda; liga módulos "
                     "entre si e recebe a testeira.")
     furo_cant_z = [87 + 200 * i for i in range(5)]
     for z in furo_cant_z:                # furo a 45 mm da face de concreto
@@ -206,15 +271,15 @@ def pecas_forma_longarina():
     # F-LON-04 orelha do tirante (chapa plana)
     ore = Peca("F-LON-04", "Orelha do tirante superior", "Longarina", 6.30, 4 * 2 * n_mod,
                80, [80], ["chapa plana"],
-               obs="Soldar em pe sobre a aba superior, a 40 mm da face de concreto, "
-                   "nas posicoes 156,25 / 1093,75 / 1406,25 / 2343,75 mm.")
+               obs="Soldar em pé sobre a aba superior, a 40 mm da face de concreto, "
+                   "nas posições 156,25 / 1093,75 / 1406,25 / 2343,75 mm.")
     ore.furos.append((40, 40, FURO_M16))
     pecas.append(ore)
 
     # F-LON-05 fundo: U invertido, alma 640, abas 75 para baixo
     fun = Peca("F-LON-05", "Fundo da longarina (U invertido)", "Longarina", 6.30, n_mod,
                mod, [75, 640, 75], ["aba", "alma (concreto)", "aba"],
-               sentido="as duas abas para baixo, lado oposto a face de concreto",
+               sentido="as duas abas para baixo, lado oposto à face de concreto",
                obs="Rasgos permitem larguras de viga de 250 a 360 mm.")
     yc = fun.largura / 2
     r1, r2 = VIGA_B_MIN / 2 + 60, VIGA_B_MAX / 2 + 60   # 185 a 240 mm do eixo
@@ -225,7 +290,7 @@ def pecas_forma_longarina():
 
     # F-LON-06 cantoneira do fundo
     comp_cf = 640 - 2 * 6.30 - 2 * DOBRA[6.30]["ri"] - 2 * 2
-    cf = Peca("F-LON-06", "Cantoneira de ligacao do fundo", "Longarina", 6.30, 2 * n_mod,
+    cf = Peca("F-LON-06", "Cantoneira de ligação do fundo", "Longarina", 6.30, 2 * n_mod,
               math.floor(comp_cf), [63, 75], ["aba soldada", "aba aparafusada"],
               sentido="uma dobra de 90 graus",
               obs="Uma em cada ponta do fundo, soldada por baixo da alma.")
@@ -245,7 +310,7 @@ def pecas_forma_longarina():
     test = Peca("F-LON-08", f"Testeira da longarina (b = {b} mm)", "Longarina", 6.30, 2,
                 larg_test, [1000, 63], ["face (concreto)", "aba superior"],
                 sentido="aba superior para fora, lado oposto ao concreto",
-                obs="Peca propria de cada largura de viga. Aparafusada nas cantoneiras "
+                obs="Peça própria de cada largura de viga. Aparafusada nas cantoneiras "
                     "F-LON-03 das duas laterais.")
     z0 = 4.75 + DOBRA[4.75]["ri"] + 2          # inicio da cantoneira acima do fundo
     for z in furo_cant_z:
@@ -264,7 +329,7 @@ def pecas_forma_placa():
     comp = L + 200
     fun = Peca("F-PLA-01", "Fundo da forma da placa", "Placa de saia", 4.75, n_formas,
                comp, [63, H + 200, 63], ["aba", "alma (concreto)", "aba"],
-               sentido="as duas abas para baixo, lado oposto a face de concreto",
+               sentido="as duas abas para baixo, lado oposto à face de concreto",
                obs="Face de concreto = face aparente da placa (lado do rio).")
     yc = fun.largura / 2
     xc = comp / 2
@@ -287,17 +352,17 @@ def pecas_forma_placa():
 
     comp_tl = L + 2 * 6.30
     tl = Peca("F-PLA-03", "Trilho longo da placa", "Placa de saia", 6.30, 2 * n_formas,
-              round(comp_tl, 1), [e, 75], ["face (concreto)", "pe"],
-              sentido="pe para fora, lado oposto ao concreto",
-              obs="Espessura da placa ate 150 mm (altura da face).")
+              round(comp_tl, 1), [e, 75], ["face (concreto)", "pé"],
+              sentido="pé para fora, lado oposto ao concreto",
+              obs="Espessura da placa até 150 mm (altura da face).")
     for dx in (-900, -450, 0, 450, 900):
         tl.furos.append((comp_tl / 2 + dx, tl.largura - 30, FURO_M16))
     pecas.append(tl)
 
     comp_tc = H - 2
     tc = Peca("F-PLA-04", "Trilho curto da placa", "Placa de saia", 6.30, 2 * n_formas,
-              comp_tc, [e, 75], ["face (concreto)", "pe"],
-              sentido="pe para fora, lado oposto ao concreto",
+              comp_tc, [e, 75], ["face (concreto)", "pé"],
+              sentido="pé para fora, lado oposto ao concreto",
               obs="Entra entre os trilhos longos.")
     for dy in (-175, 0, 175):
         tc.furos.append((comp_tc / 2 + dy, tc.largura - 30, FURO_M16))
@@ -305,20 +370,177 @@ def pecas_forma_placa():
     return pecas
 
 
+def pecas_forma_laje():
+    """Forma do painel de laje P-02. O fundo tem 2 módulos iguais: o segundo é o
+    primeiro girado 180 graus, por isso todos os furos são simétricos em relação ao
+    centro do painel."""
+    P = PAINEL
+    L, B, e = P["comprimento"], P["largura"], P["espessura"]
+    mx, my = BASE_LAJ["margem_x"], BASE_LAJ["margem_y"]
+    jx = L / 2                        # junta entre os dois módulos do fundo
+    comp_base, larg_base = jx + mx, B + 2 * my            # 2340 x 1430
+    t_tr = 4.75                       # chapa dos trilhos
+    furos_trilho_x = (150, 600, 1050, 1500, 1950, 2150)   # metade 1 (espelhados na 2)
+    furos_ponta_y = (150, 615, 1080)
+    furos_junta = (163, 488, 738, 1063)                   # ligação entre módulos
+    n_formas = 2
+    pecas = []
+
+    def local(X, Y):
+        return (round(X + mx, 2), round(Y + my, 2))
+
+    # ---- F-LAJ-01 fundo (chapa plana com furos)
+    fun = Peca("F-LAJ-01", "Fundo do painel (módulo)", "Painel de laje", 6.30, 2 * n_formas,
+               comp_base, [larg_base], ["chapa plana"],
+               obs="Dois módulos iguais por forma; o segundo gira 180 graus. Assentar sobre "
+                   "base de concreto nivelada (±2 mm). Soldar porca M12 por baixo dos 4 furos "
+                   "de 14 mm.")
+    for X in furos_trilho_x:
+        for Y in (-45, B + 45):
+            fun.furos.append((*local(X, Y), FURO_M16))
+    for Y in furos_ponta_y:
+        fun.furos.append((*local(-45, Y), FURO_M16))
+    for X in P["vigas_x"][:2]:
+        for Y in P["nichos_y"]:
+            fun.furos.append((*local(X, Y), FURO_FIXADOR))
+        for Y in P["nivelamento_y"]:
+            fun.furos.append((*local(X, Y), FURO_M16))
+    # o módulo 2, girado, precisa cair exatamente nos mesmos furos
+    mod2 = []
+    for X in furos_trilho_x:
+        for Y in (-45, B + 45):
+            mod2.append((L - X, Y, FURO_M16))
+    for Y in furos_ponta_y:
+        mod2.append((L + 45, Y, FURO_M16))
+    for X in P["vigas_x"][2:]:
+        for Y in P["nichos_y"]:
+            mod2.append((X, Y, FURO_FIXADOR))
+        for Y in P["nivelamento_y"]:
+            mod2.append((X, Y, FURO_M16))
+    girado = sorted((round(L + mx - X, 2), round(B + my - Y, 2), d) for X, Y, d in mod2)
+    assert girado == sorted(fun.furos), "módulos do fundo do painel não são intercambiáveis"
+    pecas.append(fun)
+
+    # ---- F-LAJ-02 cantoneira longitudinal do fundo (sob as bordas de 2340 mm)
+    cl = Peca("F-LAJ-02", "Cantoneira longitudinal do fundo", "Painel de laje", 4.75,
+              4 * n_formas, comp_base, [63, 100], ["aba vertical (para baixo)",
+                                                   "aba sob o fundo"],
+              sentido="uma dobra de 90 graus",
+              obs="Soldada sob a borda do fundo, aba vertical rente à borda. Os furos "
+                  "coincidem com os do fundo: o parafuso do trilho atravessa as duas chapas.")
+    for X in furos_trilho_x:
+        cl.furos.append((X + mx, cl.largura - (100 - 55), FURO_M16))
+    pecas.append(cl)
+
+    # ---- F-LAJ-03 cantoneira de topo do fundo (sob as bordas de 1430 mm)
+    comp_ct = larg_base - 2 * my - 4
+    ct = Peca("F-LAJ-03", "Cantoneira de topo do fundo", "Painel de laje", 6.30, 4 * n_formas,
+              comp_ct, [75, 75], ["aba vertical (ligação entre módulos)", "aba sob o fundo"],
+              sentido="uma dobra de 90 graus",
+              obs="Uma em cada ponta do módulo, entre as cantoneiras longitudinais. A da junta "
+                  "aparafusa na do outro módulo; a da ponta recebe o trilho de ponta.")
+    for Y in furos_ponta_y:
+        ct.furos.append((Y - 2, ct.largura - (75 - 45), FURO_M16))
+    for s in furos_junta:
+        ct.furos.append((s, 75 - 45, FURO_M16))
+    pecas.append(ct)
+
+    # ---- F-LAJ-04 nervura transversal do fundo
+    pecas.append(Peca("F-LAJ-04", "Nervura transversal do fundo (U)", "Painel de laje", 4.75,
+                      4 * 2 * n_formas, comp_ct, [63, 40, 63], ["aba", "alma", "aba"],
+                      sentido="U: as duas abas para o mesmo lado",
+                      obs="4 por módulo, a 468 / 936 / 1404 / 1872 mm da ponta do módulo."))
+
+    # ---- F-LAJ-05 trilho longo (pé 75, face 200, aba superior 75), 2 segmentos por lado
+    comp_tl = jx + t_tr
+    tl = Peca("F-LAJ-05", "Trilho longo do painel", "Painel de laje", t_tr, 4 * n_formas,
+              comp_tl, [75, e, 75], ["pé", "face (concreto)", "aba superior"],
+              sentido="pé e aba superior para fora, lado oposto ao concreto",
+              obs="4 segmentos iguais por forma (2 por borda). Recebe a régua de chave "
+                  "F-LAJ-06 soldada entre as marcas.")
+    for X in furos_trilho_x:
+        tl.furos.append((X + t_tr, 75 - 45, FURO_M16))
+    tl.furos.append((P["icamento_x"][0] + t_tr, tl.largura - (75 - 45), FURO_M16))
+    c = P["chave"]
+    alt_chave = 2 * c["aba"] + 2 * c["rebaixo"] + c["topo"]          # 140 mm
+    tl.marcas.append((tl.y_na_face(1, c["z0"]), "SOLDAR CHAVE A PARTIR DAQUI"))
+    tl.marcas.append((tl.y_na_face(1, c["z0"] + alt_chave), "LIMITE DA CHAVE"))
+    pecas.append(tl)
+
+    # ---- F-LAJ-06 régua de chave (perfil chapéu, 4 dobras de 45 graus)
+    inc = c["rebaixo"] * math.sqrt(2)
+    pecas.append(Peca("F-LAJ-06", "Régua de chave fêmea (chapéu)", "Painel de laje", 3.00,
+                      4 * n_formas, jx - 1, [c["aba"], inc, c["topo"], inc, c["aba"]],
+                      ["aba soldada", "rampa 45°", "topo (25 mm da face)", "rampa 45°",
+                       "aba soldada"], angulos=[45.0] * 4, giros=[1, -1, -1, 1],
+                      sentido="perfil chapéu: dobras 1 e 4 num sentido, 2 e 3 no sentido "
+                              "contrário",
+                      obs="Forma o rebaixo de 25 mm na borda do painel (junta fêmea-fêmea). "
+                          "Medidas admitem ±2 mm."))
+
+    # ---- F-LAJ-07 trilho de ponta (borda da ponte)
+    tp = Peca("F-LAJ-07", "Trilho de ponta do painel", "Painel de laje", t_tr, 2 * n_formas,
+              B - 2, [75, e, 75], ["pé", "face (concreto)", "aba superior"],
+              sentido="pé e aba superior para fora, lado oposto ao concreto",
+              obs="Entra entre os trilhos longos; a régua de chave encosta na face dele.")
+    for Y in furos_ponta_y:
+        tp.furos.append((Y - 1, 75 - 45, FURO_M16))
+    pecas.append(tp)
+
+    # ---- F-LAJ-08/09/10 fôrma de nicho (caixa tronco-piramidal) e travessa
+    (bx, by), (tx_, ty) = P["nicho_base"], P["nicho_topo"]
+    h = math.hypot(e, (tx_ - bx) / 2)
+    def trapezio(b1, b2):
+        d = (b2 - b1) / 2
+        return [(d, 0), (d + b1, 0), (b2, h), (0, h)]
+    pecas.append(Peca("F-LAJ-08", f"Lado de {bx} mm da forma de nicho", "Painel de laje", 4.75,
+                      2 * 8 * n_formas, tx_, [h], ["trapézio"], contorno=trapezio(bx, tx_),
+                      obs="Base menor apoia no fundo. Os lados de 200 mm cobrem as quinas."))
+    b1, b2 = by - 2 * 4.75, ty - 2 * 4.75
+    pecas.append(Peca("F-LAJ-09", f"Lado de {by} mm da forma de nicho", "Painel de laje", 4.75,
+                      2 * 8 * n_formas, b2, [h], ["trapézio"], contorno=trapezio(b1, b2),
+                      obs="Entra entre os lados de 200 mm. Soldar as quinas por dentro e "
+                          "esmerilhar por fora."))
+    trv = Peca("F-LAJ-10", "Travessa da forma de nicho", "Painel de laje", 6.30, 8 * n_formas,
+               260, [50], ["chapa plana"],
+               obs="Soldada no topo, por dentro, entre os lados de 200 mm. A barra roscada M12 "
+                   "passa no furo e prende a forma na porca soldada sob o fundo.")
+    trv.furos.append((130, 25, FURO_FIXADOR))
+    pecas.append(trv)
+
+    # ---- F-LAJ-11 régua porta-insertos (gabarito dos insertos de içamento)
+    comp_r = round(B + 2 * (t_tr + 75), 1)
+    reg = Peca("F-LAJ-11", "Régua porta-insertos de içamento", "Painel de laje", 4.75,
+               2 * n_formas, comp_r, [40, 63, 40], ["aba", "alma (apoia nos trilhos)", "aba"],
+               sentido="U: as duas abas para cima",
+               obs="Atravessa o painel sobre as abas superiores dos trilhos, a 900 e 3600 mm "
+                   "da borda da ponte; segura os insertos de içamento na posição.")
+    y_alma = reg.largura / 2
+    for Y in (-45, P["nichos_y"][0], P["nichos_y"][1], B + 45):
+        reg.furos.append((round(Y + t_tr + 75, 2), y_alma, FURO_M16))
+    pecas.append(reg)
+    return pecas
+
+
+def todas_as_pecas():
+    return pecas_forma_longarina() + pecas_forma_placa() + pecas_forma_laje()
+
+
 # --------------------------------------------------------------------------
 # VERIFICAÇÕES AUTOMÁTICAS
 # --------------------------------------------------------------------------
 def verifica(p):
     """Regras: centro do furo a pelo menos 1,5 diâmetro da borda; borda do furo a pelo
-    menos (meia zona de dobra + 2 espessuras) do centro da dobra; dobra de até 3 m."""
+    menos (meia zona de dobra + 2 espessuras) do centro da dobra; aba de pelo menos
+    0,7 vez o V da matriz; dobra de até 3 m."""
     problemas = []
-    ba = dados_dobra(p.t)[1] if p.linhas else 0.0
+    bas = [dados_dobra(p.t, a)[1] for a in p.angulos]
 
     def checa(x, y, d, nome):
         dist_borda = min(x, p.comprimento - x, y, p.largura - y)
         if dist_borda < 1.5 * d:
             problemas.append(f"{nome} a {dist_borda:.1f} mm da borda (mínimo {1.5 * d:.1f})")
-        for yl in p.linhas:
+        for yl, ba in zip(p.linhas, bas):
             folga = abs(y - yl) - d / 2
             if folga < ba / 2 + 2 * p.t:
                 problemas.append(f"{nome} a {folga:.1f} mm da dobra em y = {yl:.1f}")
@@ -328,9 +550,32 @@ def verifica(p):
     for x, y1, y2, wdt in p.rasgos:
         checa(x, y1, wdt, "rasgo")
         checa(x, y2, wdt, "rasgo")
-    if p.linhas and p.comprimento > 3000:
-        problemas.append(f"dobra de {p.comprimento} mm excede a dobradeira de 3 m")
+    if p.linhas:
+        if p.comprimento > 3000:
+            problemas.append(f"dobra de {p.comprimento} mm excede a dobradeira de 3 m")
+        minimo = ABA_MINIMA_FATOR * DOBRA[p.t]["v"]
+        for a in p.abas:
+            if a < minimo:
+                problemas.append(f"aba de {a:.1f} mm menor que o mínimo de {minimo:.1f} mm "
+                                 f"para V{DOBRA[p.t]['v']}")
     return problemas
+
+
+def roteiro_de_dobra(p):
+    """Para cada dobra: distâncias às bordas A (y = 0) e B (y = largura), borda de
+    encosto sugerida (a mais próxima) e a aba que resulta do lado do encosto."""
+    passos = []
+    n = len(p.linhas)
+    for i, yl in enumerate(p.linhas):
+        da, db = yl, p.largura - yl
+        borda = "A" if da <= db else "B"
+        aba = ""
+        if borda == "A" and i == 0:
+            aba = p.abas[0]
+        if borda == "B" and i == n - 1:
+            aba = p.abas[-1]
+        passos.append(dict(n=i + 1, ang=p.angulos[i], da=da, db=db, borda=borda, aba=aba))
+    return passos
 
 
 # --------------------------------------------------------------------------
@@ -342,15 +587,20 @@ def novo_doc():
     doc.header["$INSUNITS"] = 4
     doc.header["$MEASUREMENT"] = 1
     for nome, cor, tipo in (("CORTE", 7, "CONTINUOUS"), ("DOBRA", 2, "DASHED"),
-                            ("TEXTO", 3, "CONTINUOUS")):
+                            ("MARCA", 4, "DASHED"), ("TEXTO", 3, "CONTINUOUS")):
         if nome not in doc.layers:
             doc.layers.add(nome, color=cor, linetype=tipo)
     return doc
 
 
+def contorno_de(p):
+    if p.contorno:
+        return p.contorno
+    return [(0, 0), (p.comprimento, 0), (p.comprimento, p.largura), (0, p.largura)]
+
+
 def desenha_geometria(msp, p):
-    msp.add_lwpolyline([(0, 0), (p.comprimento, 0), (p.comprimento, p.largura),
-                        (0, p.largura)], close=True, dxfattribs={"layer": "CORTE"})
+    msp.add_lwpolyline(contorno_de(p), close=True, dxfattribs={"layer": "CORTE"})
     for x, y, d in p.furos:
         msp.add_circle((x, y), d / 2, dxfattribs={"layer": "CORTE"})
     for x, y1, y2, wdt in p.rasgos:
@@ -368,17 +618,21 @@ def grava_dxf(p, pasta):
     doc = novo_doc()
     msp = doc.modelspace()
     desenha_geometria(msp, p)
-    for i, yl in enumerate(p.linhas, 1):
+    for i, (yl, ang) in enumerate(zip(p.linhas, p.angulos), 1):
         msp.add_line((0, yl), (p.comprimento, yl), dxfattribs={"layer": "DOBRA"})
-        msp.add_text(f"DOBRA {i} - 90 GRAUS", height=8,
-                     dxfattribs={"layer": "TEXTO"}).set_placement((10, yl + 3))
-    h = max(10.0, min(30.0, p.largura / 18))
+        msp.add_text(f"DOBRA {i} - {fmt(ang)} GRAUS", height=max(4.0, min(8.0, p.largura / 20)),
+                     dxfattribs={"layer": "TEXTO"}).set_placement((10, yl + 2))
+    for ym, texto in p.marcas:
+        msp.add_line((0, ym), (p.comprimento, ym), dxfattribs={"layer": "MARCA"})
+        msp.add_text(texto, height=6, dxfattribs={"layer": "TEXTO"}).set_placement(
+            (p.comprimento * 0.6, ym + 2))
+    h = max(6.0, min(30.0, max(p.comprimento, p.largura) / 40))
     linhas_txt = [
         f"{p.codigo}  {sem_acento(p.nome).upper()}",
         f"CHAPA {fmt_t(p.t)} MM   QTD {p.qtd}   PLANIFICADA "
         f"{fmt(p.comprimento)} x {fmt(p.largura)} MM",
         f"ABAS EXTERNAS: {' / '.join(fmt(a) for a in p.abas)} MM",
-        "CAMADAS DOBRA E TEXTO NAO SAO CORTE",
+        "CAMADAS DOBRA, MARCA E TEXTO NAO SAO CORTE",
     ]
     for k, s in enumerate(linhas_txt):
         msp.add_text(s, height=h, dxfattribs={"layer": "TEXTO"}).set_placement(
@@ -394,11 +648,14 @@ def grava_svg(p, pasta):
     # y do DXF cresce para cima; no SVG invertemos para manter a mesma leitura
     def Y(y):
         return p.largura - y
-    out.append(f'<rect class="cut" x="0" y="0" width="{p.comprimento:.1f}" '
-               f'height="{p.largura:.1f}"/>')
+    pts = " ".join(f"{x:.1f},{Y(y):.1f}" for x, y in contorno_de(p))
+    out.append(f'<polygon class="cut" points="{pts}"/>')
     for yl in p.linhas:
         out.append(f'<line class="bend" x1="0" y1="{Y(yl):.1f}" x2="{p.comprimento:.1f}" '
                    f'y2="{Y(yl):.1f}"/>')
+    for ym, _ in p.marcas:
+        out.append(f'<line class="mark" x1="0" y1="{Y(ym):.1f}" x2="{p.comprimento:.1f}" '
+                   f'y2="{Y(ym):.1f}"/>')
     for x, y, d in p.furos:
         out.append(f'<circle class="hole" cx="{x:.1f}" cy="{Y(y):.1f}" r="{d / 2:.1f}"/>')
     for x, y1, y2, wdt in p.rasgos:
@@ -419,27 +676,30 @@ def fmt_t(t):
     return f"{t:.2f}".replace(".", ",")
 
 
-def roteiro_de_dobra(p):
-    """Para cada dobra: borda de encosto no batente, medida até o centro da dobra e aba
-    que resulta do lado do batente. Com uma dobra, encosta a borda mais próxima dela.
-    Com duas, a dobra 1 encosta na borda A (y = 0) e a dobra 2 na borda B (y = largura)."""
-    if len(p.linhas) == 1:
-        yl = p.linhas[0]
-        if yl <= p.largura - yl:
-            return [(1, "A", yl, p.abas[0])]
-        return [(1, "B", p.largura - yl, p.abas[-1])]
-    passos = []
-    for i, yl in enumerate(p.linhas, 1):
-        if i == 1:
-            passos.append((i, "A", yl, p.abas[0]))
-        else:
-            passos.append((i, "B", p.largura - yl, p.abas[-1]))
-    return passos
-
-
 def sem_acento(s):
-    import unicodedata
     return "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
+
+
+def lista_de_compras():
+    n_lon_mod = VIGA["comprimento"] // VIGA["modulo"]
+    return [
+        ("Parafuso sextavado M16 x 50 com porca e 2 arruelas (forma da longarina)", 100, "jogo"),
+        ("Barra roscada 5/8\" (16 mm) x 600 mm, com 2 porcas e 2 arruelas (tirante superior "
+         "da longarina)", 4 * n_lon_mod, "jogo"),
+        ("Parafuso sextavado M16 x 40 com porca e arruela (forma da placa)", 16 * 3, "jogo"),
+        ("Tubo-forma de aço ou PVC rígido, D 50 x 150 mm, com tampa e parafuso M12 "
+         "(furo de içamento e dreno da placa)", 3 * 3, "un"),
+        ("Parafuso sextavado M16 x 40 com porca e arruela (forma do painel)", 40 * 2, "jogo"),
+        ("Barra roscada M12 x 250 mm com porca e arruela (prende a fôrma de nicho)", 8 * 2, "jogo"),
+        ("Porca M12 para soldar sob o fundo do painel", 8 * 2, "un"),
+        ("Inserto roscado M16 de nivelamento, deixado no painel (8 por painel, 16 painéis)",
+         8 * 16, "un"),
+        ("Inserto de içamento especificado pelo engenheiro (4 por painel, 16 painéis)",
+         4 * 16, "un"),
+        ("Gaxeta de espuma para a base da fôrma de nicho", 1, "conforme consumo"),
+        ("Desmoldante para forma metálica", 1, "conforme consumo"),
+        ("Fita ou cordão de vedação para juntas da forma", 1, "conforme consumo"),
+    ]
 
 
 def main():
@@ -447,7 +707,7 @@ def main():
     for pasta in pastas.values():
         os.makedirs(pasta, exist_ok=True)
 
-    pecas = pecas_forma_longarina() + pecas_forma_placa()
+    pecas = todas_as_pecas()
 
     erros = {p.codigo: verifica(p) for p in pecas}
     erros = {k: v for k, v in erros.items() if v}
@@ -474,32 +734,23 @@ def main():
     with open(os.path.join(pastas["tabelas"], "tabela_de_dobras.csv"), "w", newline="",
               encoding="utf-8") as f:
         wr = csv.writer(f, delimiter=";")
-        wr.writerow(["codigo", "dobra", "angulo_graus", "borda_de_encosto",
-                     "medida_ate_centro_da_dobra_mm", "aba_externa_resultante_mm",
+        wr.writerow(["codigo", "dobra", "angulo_graus", "distancia_da_borda_A_mm",
+                     "distancia_da_borda_B_mm", "encosto_sugerido", "aba_do_lado_do_encosto_mm",
                      "comprimento_da_dobra_mm", "chapa_mm", "raio_interno_mm", "fator_K",
                      "V_matriz_mm", "forca_estimada_tf", "sentido"])
         for p in pecas:
             d = DOBRA[p.t]
-            for i, borda, medida, aba in roteiro_de_dobra(p):
-                wr.writerow([p.codigo, i, 90, borda, fmt(medida), fmt(aba), fmt(p.comprimento),
-                             fmt_t(p.t), fmt(d["ri"]), d["k"], d["v"],
+            for r in roteiro_de_dobra(p):
+                wr.writerow([p.codigo, r["n"], fmt(r["ang"]), fmt(r["da"]), fmt(r["db"]),
+                             r["borda"], fmt(r["aba"]) if r["aba"] != "" else "",
+                             fmt(p.comprimento), fmt_t(p.t), fmt(d["ri"]), d["k"], d["v"],
                              fmt(forca_dobra_tf(p.t, p.comprimento)), p.sentido])
 
-    compras = [
-        ("Parafuso sextavado M16 x 50 com porca e 2 arruelas (forma da longarina)", 100, "jogo"),
-        ("Barra roscada 5/8\" (16 mm) x 600 mm, com 2 porcas e 2 arruelas (tirante superior)",
-         4 * VIGA["comprimento"] // VIGA["modulo"], "jogo"),
-        ("Parafuso sextavado M16 x 40 com porca e arruela (forma da placa)", 16 * 3, "jogo"),
-        ("Tubo-forma de aço ou PVC rígido, D 50 x 150 mm, com tampa e parafuso M12 "
-         "(furo de içamento e dreno da placa)", 3 * 3, "un"),
-        ("Desmoldante para forma metálica", 1, "conforme consumo"),
-        ("Fita ou cordão de vedação para juntas da forma", 1, "conforme consumo"),
-    ]
     with open(os.path.join(pastas["tabelas"], "lista_de_compras.csv"), "w", newline="",
               encoding="utf-8") as f:
         wr = csv.writer(f, delimiter=";")
         wr.writerow(["item", "quantidade", "unidade"])
-        for linha in compras:
+        for linha in lista_de_compras():
             wr.writerow(linha)
 
     with open(os.path.join(pastas["tabelas"], "kit_pecas_de_concreto.csv"), "w", newline="",
@@ -511,10 +762,9 @@ def main():
             wr.writerow([cod, nome, dim, f"{vol:.3f}".replace(".", ","),
                          f"{vol * CONCRETO_T_M3:.2f}".replace(".", ","), qtd,
                          f"{vol * qtd:.2f}".replace(".", ","), forma])
-            print(f"{cod} {nome[:48]:48s} {vol:6.3f} m3  {vol * CONCRETO_T_M3:5.2f} t  x{qtd}")
 
     resumo = []
-    for forma in sorted({p.forma for p in pecas}):
+    for forma in dict.fromkeys(p.forma for p in pecas):
         ps = [p for p in pecas if p.forma == forma]
         resumo.append((forma, sum(p.peso * p.qtd for p in ps), sum(p.qtd for p in ps)))
     with open(os.path.join(pastas["tabelas"], "resumo.txt"), "w", encoding="utf-8") as f:

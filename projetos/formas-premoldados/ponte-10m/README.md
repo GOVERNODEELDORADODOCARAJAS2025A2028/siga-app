@@ -25,8 +25,9 @@ formas serve: a forma da longarina é modular (2,50 m) e faz a viga de 5 m com 2
 
 ## 2. Respostas às decisões em aberto
 
-**Laje.** Recomendação: **painéis de laje pré-moldados de espessura total** (P-02),
-apoiados direto nas longarinas e ligados a elas por nichos grauteados. É a solução de
+**Laje.** Recomendação: **painéis de laje pré-moldados de espessura total** (P-02), de
+4,50 × 1,23 × 0,20 m num módulo de 1,25 m (20 mm de junta entre painéis), apoiados direto
+nas longarinas e ligados a elas por nichos grauteados. É a solução de
 "peças grandes e grossas" pedida, e na obra sobra só graute e revestimento. A alternativa
 mais tolerante é pré-laje fina com capa concretada na obra (padrão DER-PR), que gasta
 mais concreto no campo. Concretar a laje inteira na obra não é recomendado aqui.
@@ -93,7 +94,7 @@ de 0,4 do veículo por viga: ≈ 28 cm² de aço longitudinal (6 Ø 25 em 2 cama
 | Código | Peça | Dimensões (m) | Peso unit. | Qtd. | Forma |
 |---|---|---|---|---|---|
 | P-01 | Longarina | 0,30 × 0,90 × 10,00 | 6,75 t | 8 | F-LON |
-| P-02 | Painel de laje de espessura total, 8 nichos | 4,50 × 1,25 × 0,20 | 2,61 t | 16 | F-LAJ |
+| P-02 | Painel de laje de espessura total, 8 nichos | 4,50 × 1,23 × 0,20 | 2,51 t | 16 | F-LAJ |
 | P-03 | Guarda-rodas (módulo; seção a definir) | 2,50 de comprimento | ≈ 1,25 t | 16 | F-GUA |
 | P-04 | Travessa (cabeceiras e apoio central) | 4,64 × 0,90 × 0,60 | 6,26 t | 3 | F-TRA |
 | P-05 | Pilar de cabeceira com ranhura | 0,30 × 0,70 × 4,10 | 1,99 t | 6 | F-PIL |
@@ -112,6 +113,10 @@ Coordenação entre peças, que precisa estar no projeto:
   topo da longarina se agrupam nesses pontos (16 grupos por viga).
 - As alças de içamento da longarina ficam dentro de um nicho ou são cortadas depois da
   montagem, para não bater no painel.
+- Painéis com 20 mm de junta entre si. Sobre o apoio central sobra uma junta de dilatação de
+  cerca de 70 mm e, em cada cabeceira, de cerca de 60 mm até a cortina.
+- Entre o topo da viga e o painel fica um berço de graute de cerca de 20 mm, contido por
+  tiras de espuma coladas nas bordas da viga; o neoprene com calço tem cerca de 40 mm.
 - Peças acima de 6 t exigem guindaste. Conferir a tabela de carga do equipamento no raio
   real de trabalho.
 
@@ -121,7 +126,7 @@ Coordenação entre peças, que precisa estar no projeto:
 |---|---|---|
 | F-LON | Longarina (regulável: largura de 250 a 360 mm, altura até 1000 mm, comprimento em módulos de 2,50 m) | **Detalhada: arquivos em `saida/`** |
 | F-PLA | Placa de saia (espessura até 150 mm) | **Detalhada: arquivos em `saida/`** |
-| F-LAJ | Painel de laje: trilhos com chave fêmea, fôrmas de nicho, gabarito de insertos | Próxima etapa |
+| F-LAJ | Painel de laje (fundo em 2 módulos iguais, trilhos com chave fêmea, fôrmas de nicho, gabarito de insertos) | **Detalhada: arquivos em `saida/`** |
 | F-PIL | Pilar 30 × 70 com réguas de ranhura removíveis e testeira regulável | Próxima etapa, depois do cálculo do pilar |
 | F-TRA | Travessa, em 2 módulos de 2,32 m | Próxima etapa |
 | F-COR | Cortina | Próxima etapa |
@@ -129,9 +134,10 @@ Coordenação entre peças, que precisa estar no projeto:
 | F-GUA | Guarda-rodas, módulo de 2,50 m | Próxima etapa |
 | F-LTR | Laje de transição | Próxima etapa |
 
-Aço das formas já detalhadas: F-LON com ≈ 1.778 kg (um jogo completo para viga de 10 m) e
-F-PLA com ≈ 401 kg (3 formas). Com um jogo de F-LON sai uma viga por ciclo de concretagem.
-As 8 vigas da ponte pedem 8 ciclos. Com 3 formas de placa, as 24 placas saem em 8 ciclos.
+Aço das formas já detalhadas: F-LON com ≈ 1.778 kg (um jogo completo para viga de 10 m),
+F-PLA com ≈ 401 kg (3 formas) e F-LAJ com ≈ 1.437 kg (2 formas). Total ≈ 3.617 kg. Com um
+jogo de F-LON sai uma viga por ciclo de concretagem: as 8 vigas pedem 8 ciclos. As 24 placas
+saem em 8 ciclos com 3 formas, e os 16 painéis em 8 ciclos com 2 formas.
 
 ## 6. Forma da longarina (F-LON)
 
@@ -168,19 +174,42 @@ A placa é concretada deitada. A face aparente, voltada para o rio, fica embaixo
   furos de 14 mm do fundo.
 - Recomenda-se fazer 3 formas.
 
+## 7a. Forma do painel de laje (F-LAJ)
+
+O painel é concretado com a face de baixo (a que apoia nas vigas) sobre o fundo e o topo
+sarrafeado pelas abas dos trilhos.
+- Fundo F-LAJ-01: dois módulos iguais de 2340 × 1430 mm em chapa de 6,30 mm. O segundo é o
+  primeiro girado 180°; o gerador confere que todos os furos coincidem. Sob cada módulo vão
+  2 cantoneiras longitudinais F-LAJ-02, 2 de topo F-LAJ-03 e 4 nervuras F-LAJ-04.
+- Trilhos longos F-LAJ-05 (4 segmentos iguais de 2254,8 mm) e trilhos de ponta F-LAJ-07, com
+  pé de 75 mm, face de 200 mm e aba superior de 75 mm, em chapa de 4,75 mm.
+- Régua de chave F-LAJ-06, perfil chapéu de 3 mm com 4 dobras de 45°, soldada no trilho
+  entre as marcas do desenho. Forma o rebaixo de 25 mm da junta fêmea-fêmea. Usa chapa de
+  3 mm porque as abas de 20 mm pedem matriz V20.
+- 8 fôrmas de nicho por painel (F-LAJ-08, 09 e 10): caixas tronco-piramidais de 200 × 250 mm
+  embaixo e 220 × 270 mm em cima, presas por barra roscada M12 na porca soldada sob o fundo.
+- Régua porta-insertos F-LAJ-11, a 900 e 3600 mm, para os 4 insertos de içamento. Os 8
+  insertos de nivelamento (2 por viga) são presos por baixo, pelos furos de 18 mm do fundo.
+- Junta entre painéis: 20 mm de abertura, tarugo de espuma no fundo, graute sem retração e
+  vedação nas pontas. Por cima vão manta impermeabilizante e revestimento.
+
 ## 8. Arquivos para o fornecedor
 
 - `saida/dxf/<código>_CORTE.dxf`: **o arquivo do plasma**. Tem só contorno e furos, em mm,
   formato DXF R2000.
-- `saida/dxf/<código>_DESENHO.dxf`: conferência. Traz as linhas de dobra (camada DOBRA) e os
-  textos (camada TEXTO). **Não mandar este arquivo para corte.**
-- `saida/tabelas/tabela_de_dobras.csv`: para cada dobra, a borda que encosta no batente, a
-  medida até o centro da dobra, a aba resultante e a força estimada.
+- `saida/dxf/<código>_DESENHO.dxf`: conferência. Traz as linhas de dobra (camada DOBRA), as
+  marcas de solda (camada MARCA) e os textos (camada TEXTO). **Não mandar este arquivo para
+  corte.**
+- `saida/caderno/caderno_formas_ponte_10m.pdf`: **caderno de fabricação**, A4 deitado, com
+  capa, folhas de montagem e uma folha por peça (planificação cotada, perfil dobrado, dobras e
+  coordenadas dos furos). É o material para a oficina e para conferir com o fornecedor.
+- `saida/tabelas/tabela_de_dobras.csv`: para cada dobra, o ângulo, a distância às duas
+  bordas, a borda de encosto sugerida, a aba resultante e a força estimada.
 - `saida/tabelas/lista_de_corte.csv`: quantidades, planificações e pesos.
 - `saida/tabelas/lista_de_compras.csv`: parafusos, tirantes e tubos-forma.
 
-**Dados de dobra provisórios.** Raio interno de 6 mm e K = 0,42 para chapa de 4,75 mm;
-raio de 8 mm e K = 0,42 para 6,30 mm (matrizes de V40 e V50). O fornecedor deve informar
+**Dados de dobra provisórios.** Raio interno de 3,5 mm para chapa de 3,00 mm (V20), 6 mm para
+4,75 mm (V40) e 8 mm para 6,30 mm (V50), todos com K = 0,42. O fornecedor deve informar
 a tabela real. Os valores são trocados no topo de `gerador/gerar_formas.py` e os arquivos
 são gerados de novo.
 
@@ -193,11 +222,14 @@ raio maior).
 
 ```
 pip install ezdxf
-python3 gerador/gerar_formas.py
+python3 gerador/gerar_formas.py      # DXF, SVG e tabelas
+python3 gerador/gerar_caderno.py     # caderno em PDF (precisa de Node com Playwright)
 ```
 
-As dimensões ficam no topo do arquivo: `VIGA`, `PLACA` e `DOBRA`. O gerador confere
-sozinho a distância dos furos às bordas e às dobras, e recusa dobra acima de 3 m.
+As dimensões ficam no topo de `gerar_formas.py`: `VIGA`, `PLACA`, `PAINEL` e `DOBRA`. O
+gerador confere sozinho a distância dos furos às bordas e às dobras, a aba mínima para cada
+matriz e a troca dos módulos do fundo do painel, e recusa dobra acima de 3 m. Os desenhos em
+escala ficam em `gerador/desenhos.py`.
 
 ## 10. Antes de cortar
 

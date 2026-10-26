@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 499.5 1091.1" class="flat" data-codigo="F-LON-08">
-<rect class="cut" x="0" y="0" width="459.5" height="1051.1"/>
+<polygon class="cut" points="0.0,1051.1 459.5,1051.1 459.5,0.0 0.0,0.0"/>
 <line class="bend" x1="0" y1="57.1" x2="459.5" y2="57.1"/>
 <circle class="hole" cx="34.8" cy="951.4" r="9.0"/>
 <circle class="hole" cx="424.8" cy="951.4" r="9.0"/>
