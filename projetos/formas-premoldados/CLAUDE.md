@@ -5,6 +5,14 @@ Projetos de fôrmas de chapa cortada a laser de fibra (cerca de 3 kW) e dobrada 
 de vão único de 10 m em `ponte-10m/`. Capacidade nominal e ferramental da dobradeira ainda não
 confirmados.
 
+O motor comum fica em `comum/` e vale para todos os projetos: `chapas.py` (parâmetros de dobra,
+peça de chapa, verificações, DXF, SVG e tabelas), `desenho.py` (desenho base, planificação e
+seção dobrada), `folhas.py` (folha NBR 16752, legenda e impressão), `pranchas.py` (quadros das
+marcas, distribuição dos detalhes nas folhas, parâmetros e listas) e os scripts de impressão e
+verificação. Cada projeto define as peças, os desenhos próprios e a identificação da obra
+(`folhas.configura`). Mudança no motor comum exige regenerar todos os projetos e conferir que
+as saídas dos projetos já entregues não mudaram.
+
 ## Padrão de entrega (pedido do usuário)
 
 1. **Cada PDF enviado diretamente na conversa** (`SendUserFile` com `display: "render"`), nunca
@@ -31,7 +39,7 @@ confirmados.
   extraída do ícone do SIGA; substituir pelo brasão oficial quando fornecido), os dados da
   Prefeitura (CNPJ e endereço), o Prefeito Municipal, o responsável técnico pelo projeto (a
   designar) e a análise técnica do Eng. Jean Carlos da Mota Sarcedo, com campo de assinatura.
-  Os dados ficam em `folhas.py`. CPF não é impresso: a Lei nº 5.194/1966, art. 14, exige
+  Os dados ficam em `comum/folhas.py`. CPF não é impresso: a Lei nº 5.194/1966, art. 14, exige
   assinatura, título e número do registro, e a LGPD (art. 6º, III) limita os dados ao
   necessário. O analista não figura como autor nem como responsável técnico.
 - Página publicada (Artifact) sem nome, brasão ou marca da Prefeitura.

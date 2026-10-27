@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Folhas de desenho (ABNT NBR 16752:2020) para as pranchas da ponte pré-moldada de 10 m.
+Folhas de desenho (ABNT NBR 16752:2020) comuns aos projetos de fôrmas de pré-moldados.
 
 Formato da série A, margem esquerda de 20 mm e demais de 10 mm, linha de margem de 0,7 mm
 (A2 a A4) ou 1,0 mm (A0 e A1), legenda de 180 mm no canto inferior direito, com quadro de
 revisões acima dela. Linhas e escrita conforme ABNT NBR 16861:2020; escalas conforme
 ABNT NBR 8196. Os blocos de cada folha são posicionados em milímetros, a partir do canto
 superior esquerdo do quadro.
+
+Os dados do proprietário e da análise técnica são comuns; os dados de cada projeto (obra,
+local, situação, data e revisões) são informados por configura() antes de montar as folhas.
 """
 
 import base64
@@ -28,14 +31,14 @@ ANALISTA_NOME = "Jean Carlos da Mota Sarcedo"
 ANALISTA_CREA, ANALISTA_MATRICULA = "1516847989", "17.120"
 ANALISTA = f"ENG. {ANALISTA_NOME.upper()}"
 ANALISTA_REGISTRO = f"CREA-PA Nº {ANALISTA_CREA} – MATRÍCULA Nº {ANALISTA_MATRICULA}"
-OBRA = "PONTE EM CONCRETO PRÉ-MOLDADO, VÃO ÚNICO DE 10,00 m, LARGURA DE 4,50 m"
-LOCAL = "A DEFINIR"
-SITUACAO = "ANTEPROJETO PARA ANÁLISE TÉCNICA – NÃO LIBERADO PARA FABRICAÇÃO"
-DATA = "26/10/2026"
-REVISOES = [("0", DATA, "EMISSÃO INICIAL PARA ANÁLISE TÉCNICA")]
+# dados de cada projeto, informados por configura()
+OBRA = LOCAL = SITUACAO = DATA = ""
+REVISOES = []
+
+COMUM = os.path.dirname(os.path.abspath(__file__))     # scripts de impressão e verificação
 
 # bandeira do Município, na legenda e na capa do memorial
-LOGO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo_eldorado.png")
+LOGO = os.path.join(COMUM, "logo_eldorado.png")
 with open(LOGO, "rb") as _f:
     LOGO_URI = "data:image/png;base64," + base64.b64encode(_f.read()).decode("ascii")
 
@@ -166,6 +169,12 @@ svg.imp .memb{fill:#000;stroke:none}
 svg.imp .asph{fill:#c8c8c8;stroke:#000;stroke-width:.18mm}
 svg.imp .chanf{fill:#a8a8a8;stroke:#000;stroke-width:.18mm}
 """
+
+
+def configura(obra, local, situacao, data, revisoes):
+    """Dados do projeto usados na legenda das folhas e na capa do memorial."""
+    global OBRA, LOCAL, SITUACAO, DATA, REVISOES
+    OBRA, LOCAL, SITUACAO, DATA, REVISOES = obra, local, situacao, data, list(revisoes)
 
 
 class Bruto(str):
@@ -323,7 +332,7 @@ class Documento:
 def grava_e_imprime(doc, html_path, pdf_path, cabecalho=None):
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(doc if isinstance(doc, str) else doc.html())
-    js = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imprimir_pdf.js")
+    js = os.path.join(COMUM, "imprimir_pdf.js")
     if not shutil.which("node"):
         print("Node não encontrado: abrir o HTML no navegador e imprimir no formato da folha.")
         return False

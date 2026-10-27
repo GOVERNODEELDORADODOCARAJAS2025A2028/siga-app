@@ -75,12 +75,16 @@ python3 gerar_arranjo.py     # prancha AG-01 em A1
 python3 gerar_memorial.py    # memorial MD-01 em A4
 ```
 
-Dados de identificação (proprietário, Prefeito, analista, situação e revisões) no início de
-`gerador/folhas.py`; bandeira do Município em `gerador/logo_eldorado.png`.
+Dados de identificação da obra (situação, data e revisões) em `IDENTIFICACAO`, no início de
+`gerador/gerar_formas.py`; dados do proprietário, do Prefeito e do analista em
+`../comum/folhas.py`; bandeira do Município em `../comum/logo_eldorado.png`.
 
 Parâmetros no início de `gerador/gerar_formas.py`:
 
 - `VIGA`, `PLACA` e `PAINEL`: dimensões dos elementos de concreto.
+
+Em `../comum/chapas.py`, comuns a todos os projetos de fôrmas:
+
 - `DOBRA`: raio interno, fator K e abertura da matriz por espessura (valores de referência, a
   substituir pela tabela do ferramental do fabricante).
 - `DOBRADEIRA`: capacidade nominal em tf (a preencher pela placa de identificação); com ela,
@@ -88,8 +92,10 @@ Parâmetros no início de `gerador/gerar_formas.py`:
 
 O gerador verifica a distância dos furos às bordas e às linhas de dobra, a aba mínima para a
 matriz, o comprimento de dobra (até 3000 mm), a intercambialidade dos módulos do fundo do
-painel e a simetria da furação dos trilhos. Os desenhos em escala ficam em
-`gerador/desenhos.py`; a folha, a legenda e o estilo de impressão, em `gerador/folhas.py`.
+painel e a simetria da furação dos trilhos. Os desenhos da ponte ficam em
+`gerador/desenhos.py`. O motor comum fica em `../comum/`: chapas e arquivos de corte
+(`chapas.py`), desenho base, planificação e seção dobrada (`desenho.py`), folha, legenda e
+estilo de impressão (`folhas.py`) e montagem das pranchas de detalhe (`pranchas.py`).
 
 ## 6. Condicionantes para liberação da fabricação
 

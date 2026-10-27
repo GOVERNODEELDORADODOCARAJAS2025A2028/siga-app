@@ -15,8 +15,12 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                                "comum"))
 import folhas as fl                       # noqa: E402
 import gerar_formas as gf                 # noqa: E402
+
+fl.configura(**gf.IDENTIFICACAO)
 
 PASTA = os.path.join(gf.SAIDA, "pranchas")
 

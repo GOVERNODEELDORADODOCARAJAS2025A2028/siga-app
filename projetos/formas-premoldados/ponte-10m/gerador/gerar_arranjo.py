@@ -15,9 +15,13 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                                "comum"))
 import desenhos as dz                     # noqa: E402
 import folhas as fl                       # noqa: E402
 import gerar_formas as gf                 # noqa: E402
+
+fl.configura(**gf.IDENTIFICACAO)
 
 PASTA = os.path.join(gf.SAIDA, "pranchas")
 
@@ -152,7 +156,7 @@ def main():
     pdf_path = os.path.join(PASTA, "AG-01_arranjo_geral_A1.pdf")
     if fl.grava_e_imprime(doc, html_path, pdf_path):
         print("PDF:", pdf_path)
-    js = os.path.join(os.path.dirname(os.path.abspath(__file__)), "verifica_folhas.js")
+    js = os.path.join(fl.COMUM, "verifica_folhas.js")
     args = ["node", js, html_path] + (["--medidas"] if "--medidas" in sys.argv else [])
     r = subprocess.run(args, capture_output=True, text=True)
     print(r.stdout.strip() or r.stderr.strip()[:400])
