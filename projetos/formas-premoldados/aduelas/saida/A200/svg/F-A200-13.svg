@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 1310.0 292.1" class="flat" data-codigo="F-A200-13">
+<polygon class="cut" points="0.0,252.1 1270.0,252.1 1270.0,0.0 0.0,0.0"/>
+<line class="bend" x1="0" y1="196.6" x2="1270.0" y2="196.6"/>
+<line class="bend" x1="0" y1="55.5" x2="1270.0" y2="55.5"/>
+<circle class="hole" cx="75.0" cy="160.8" r="9.0"/>
+<circle class="hole" cx="635.0" cy="160.8" r="9.0"/>
+<circle class="hole" cx="1195.0" cy="160.8" r="9.0"/>
+</svg>

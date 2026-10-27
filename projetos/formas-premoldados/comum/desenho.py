@@ -84,8 +84,18 @@ class Dwg:
         p = " ".join(f"{n(self.X(x))},{n(self.Z(z))}" for x, z in pts)
         self.items.append(f'<polygon class="{cls}" points="{p}"/>')
 
-    def _hachura(self, pts, cls):
-        """Hachura vetorial recortada no contorno (impressão nítida em qualquer escala)."""
+    def poly_vazado(self, contornos, cls):
+        """Polígono com vazios: o primeiro contorno é o externo; os demais são vazios
+        (preenchimento par-ímpar)."""
+        d = "".join("M" + "L".join(f"{n(self.X(x))},{n(self.Z(z))}" for x, z in c) + "Z"
+                    for c in contornos)
+        if self.escala and cls in HACHURAS:
+            return self._hachura(contornos[0], cls, caminho=d)
+        self.items.append(f'<path class="{cls}" fill-rule="evenodd" d="{d}"/>')
+
+    def _hachura(self, pts, cls, caminho=None):
+        """Hachura vetorial recortada no contorno (impressão nítida em qualquer escala).
+        'caminho': contorno com vazios (path SVG), quando houver; 'pts' dá a extensão."""
         tipo, passo = HACHURAS[cls]
         s = passo * self.escala
         p = " ".join(f"{n(self.X(x))},{n(self.Z(z))}" for x, z in pts)
@@ -136,6 +146,12 @@ class Dwg:
                 z += s
         corpo = (f'<path class="hl" d="{"".join(traco)}"/>' if traco else "") + \
             (f'<g class="hd">{"".join(pontos)}</g>' if pontos else "")
+        if caminho:
+            self.items.append(f'<clipPath id="{cid}"><path clip-rule="evenodd" d="{caminho}"/>'
+                              f'</clipPath><path class="hfundo" fill-rule="evenodd" '
+                              f'd="{caminho}"/><g clip-path="url(#{cid})">{corpo}</g>'
+                              f'<path class="{cls}" fill="none" d="{caminho}"/>')
+            return
         self.items.append(f'<clipPath id="{cid}"><polygon points="{p}"/></clipPath>'
                           f'<polygon class="hfundo" points="{p}"/>'
                           f'<g clip-path="url(#{cid})">{corpo}</g>'

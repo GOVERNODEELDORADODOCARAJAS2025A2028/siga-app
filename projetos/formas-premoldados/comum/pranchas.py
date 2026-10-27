@@ -237,7 +237,8 @@ class Detalhamento:
         folhas = [self._arruma(medidas, g) for g in melhor[0]]
         return sorted(folhas, key=lambda f: min(c for c, *_ in f))
 
-    def folha(self, doc, pecas, itens):
+    def folha(self, doc, pecas, itens, titulo=None):
+        """Folha de detalhe; 'titulo' substitui o nome da fôrma no título da folha."""
         conteudo, escalas, cods = "", set(), []
         for cod, x, y, w, h in itens:
             p = pecas[cod]
@@ -249,7 +250,7 @@ class Detalhamento:
             if cod in self.vista_parcial:
                 escalas.add(self.vista_parcial[cod][0])
             cods.append(cod)
-        forma = U(self.nomes_formas[pecas[cods[0]].forma])
+        forma = titulo or U(self.nomes_formas[pecas[cods[0]].forma])
         cods = sorted(cods)
         marcas = cods[0] if len(cods) == 1 else ", ".join(cods[:-1]) + " E " + cods[-1]
         termo = "DA MARCA" if len(cods) == 1 else "DAS MARCAS"

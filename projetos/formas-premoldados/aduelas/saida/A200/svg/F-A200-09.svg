@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 1440.0 1030.0" class="flat" data-codigo="F-A200-09">
+<polygon class="cut" points="0.0,990.0 1400.0,990.0 1400.0,0.0 0.0,0.0"/>
+<line class="mark" x1="280.0" y1="923.0" x2="280.0" y2="64.0"/>
+<line class="mark" x1="560.0" y1="923.0" x2="560.0" y2="64.0"/>
+<line class="mark" x1="840.0" y1="923.0" x2="840.0" y2="64.0"/>
+<line class="mark" x1="1120.0" y1="923.0" x2="1120.0" y2="64.0"/>
+<circle class="hole" cx="700.0" cy="460.0" r="9.0"/>
+</svg>

@@ -1,9 +1,9 @@
 # Fôrmas metálicas de pré-moldados
 
 Projetos de fôrmas de chapa cortada a laser de fibra (cerca de 3 kW) e dobrada (dobradeira de
-3 m, da mesma marca do laser), para peças pré-moldadas de concreto. O primeiro é o kit da ponte
-de vão único de 10 m em `ponte-10m/`. Capacidade nominal e ferramental da dobradeira ainda não
-confirmados.
+3 m, da mesma marca do laser), para peças pré-moldadas de concreto. Projetos: ponte de vão único
+de 10 m (`ponte-10m/`) e aduelas de seção quadrada de 1,00 m, 2,00 m e 2,50 m (`aduelas/`).
+Capacidade nominal e ferramental da dobradeira ainda não confirmados.
 
 O motor comum fica em `comum/` e vale para todos os projetos: `chapas.py` (parâmetros de dobra,
 peça de chapa, verificações, DXF, SVG e tabelas), `desenho.py` (desenho base, planificação e
@@ -16,8 +16,10 @@ as saídas dos projetos já entregues não mudaram.
 ## Padrão de entrega (pedido do usuário)
 
 1. **Cada PDF enviado diretamente na conversa** (`SendUserFile` com `display: "render"`), nunca
-   só dentro do zip: arranjo geral AG-01 (A1), pranchas das fôrmas FM (A3) e memorial MD-01
-   (A4), gerados por `gerar_arranjo.py`, `gerar_pranchas.py` e `gerar_memorial.py`.
+   só dentro do zip: pranchas e memorial de cada projeto, gerados por `gerar_pranchas.py`,
+   `gerar_arranjo.py` (só a ponte) e `gerar_memorial.py`. Ponte: arranjo geral AG-01 (A1),
+   fôrmas FM (A3) e memorial MD-01 (A4). Aduelas: fôrmas FA100, FA200 e FA250 (A3, um
+   conjunto por tamanho) e memorial MD-02 (A4).
 2. **Pacote zip** com os DXF, as tabelas CSV e os PDFs (`SendUserFile` com
    `display: "attach"`).
 3. A página do kit atualizada, quando ela existir.
@@ -31,6 +33,9 @@ as saídas dos projetos já entregues não mudaram.
   180 mm, quadro de revisões) e ABNT NBR 16861:2020 (linhas e escrita); escalas da NBR 8196.
   Texto em caixa alta, com os símbolos de unidade em minúsculas (mm, m, kg).
 - Pendências escritas como condicionantes técnicas ou legais, com a base normativa.
+- Normas citadas pela edição vigente, conferida no catálogo da ABNT. A ABNT NBR 15696 tem
+  edição de 12/2025; o MD-01 da ponte (revisão 0) ainda cita a de 2009 e deve ser corrigido
+  na próxima revisão.
 - Estimativas declaradas como estimativas, com hipóteses e método. Nada de símbolos
   informais (setas, "≈", separadores) no lugar de texto.
 - Antes de entregar, rodar a verificação de sobreposição (`verifica_folhas.js`, chamada pelos

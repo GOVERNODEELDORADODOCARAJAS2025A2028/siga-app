@@ -1,0 +1,16 @@
+codigo;dobra;angulo_graus;distancia_da_borda_A_mm;distancia_da_borda_B_mm;encosto_sugerido;aba_do_lado_do_encosto_mm;comprimento_da_dobra_mm;chapa_mm;raio_interno_mm;fator_K;V_matriz_mm;forca_estimada_tf;sentido
+F-A250-03;1;90;200,3;200,3;A;204,8;1065;4,75;6;0.42;40;39,8;dobra única de 90 graus, face de concreto no lado interno
+F-A250-04;1;90;57,1;69,1;A;63;1065;6,30;8;0.42;50;56;dobra única de 90 graus
+F-A250-05;1;90;57,1;69,1;A;63;2370;6,30;8;0.42;50;124,7;dobra única de 90 graus
+F-A250-06;1;90;55,5;196,6;A;60;2370;4,75;6;0.42;40;88,6;perfil U, abas para o mesmo lado
+F-A250-06;2;90;196,6;55,5;B;60;2370;4,75;6;0.42;40;88,6;perfil U, abas para o mesmo lado
+F-A250-07;1;90;58,5;89,6;A;63;938;4,75;6;0.42;40;35,1;perfil U, abas para o mesmo lado
+F-A250-07;2;90;89,6;58,5;B;63;938;4,75;6;0.42;40;35,1;perfil U, abas para o mesmo lado
+F-A250-10;1;45;98,7;378,9;A;100;990;4,75;6;0.42;40;37;duas dobras de 45 graus, face de concreto no lado externo
+F-A250-10;2;45;378,9;98,7;B;100;990;4,75;6;0.42;40;37;duas dobras de 45 graus, face de concreto no lado externo
+F-A250-11;1;90;57,1;69,1;A;63;990;6,30;8;0.42;50;52,1;dobra única de 90 graus
+F-A250-12;1;90;57,1;69,1;A;63;1770;6,30;8;0.42;50;93,1;dobra única de 90 graus
+F-A250-13;1;90;55,5;196,6;A;60;1770;4,75;6;0.42;40;66,2;perfil U, abas para o mesmo lado
+F-A250-13;2;90;196,6;55,5;B;60;1770;4,75;6;0.42;40;66,2;perfil U, abas para o mesmo lado
+F-A250-14;1;90;58,5;89,6;A;63;863;4,75;6;0.42;40;32,3;perfil U, abas para o mesmo lado
+F-A250-14;2;90;89,6;58,5;B;63;863;4,75;6;0.42;40;32,3;perfil U, abas para o mesmo lado

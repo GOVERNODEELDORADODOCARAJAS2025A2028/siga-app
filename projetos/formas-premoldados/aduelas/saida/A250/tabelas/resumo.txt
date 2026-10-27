@@ -1,0 +1,6 @@
+Fôrma externa: 64 peças de chapa, 880 kg de aço
+Núcleo: 60 peças de chapa, 679 kg de aço
+Base: 16 peças de chapa, 340 kg de aço
+Anel superior: 8 peças de chapa, 130 kg de aço
+Acessório: 2 peças de chapa, 1 kg de aço
+Total: 2031 kg
